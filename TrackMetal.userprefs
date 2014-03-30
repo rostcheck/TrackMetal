@@ -1,0 +1,38 @@
+﻿<Properties GitUserInfo="UsingGIT">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="MetalAccounting/GoldMoneyParser.cs">
+    <Files>
+      <File FileName="MetalAccounting/MetalStorageService.cs" Line="221" Column="1" />
+      <File FileName="MetalAccounting/StorageFeeInMetal.cs" Line="14" Column="23" />
+      <File FileName="TrackMetal/Program.cs" Line="96" Column="49" />
+      <File FileName="MetalAccounting/Lot.cs" Line="64" Column="60" />
+      <File FileName="MetalAccounting/TaxableSale.cs" Line="1" Column="1" />
+      <File FileName="MetalAccounting/GoldMoneyParser.cs" Line="207" Column="24" />
+      <File FileName="MetalAccounting/Transaction.cs" Line="20" Column="36" />
+      <File FileName="MetalAccounting/Utils.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>transaction.AmountPaid</Value>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint hitAction="PrintExpression" traceExpression="{transaction.MetalType}" file="/Users/davidr/Documents/Software Projects/Xamarin/TrackMetal/MetalAccounting/MetalStorageService.cs" line="219" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches>
+    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
+    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
+    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
+    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
+    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
+    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
+    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
+    <Watch file="MetalAccounting/MetalStorageService.cs" line="82" offsetX="650" offsetY="1215" expression="transactionList" liveUpdate="False" />
+    <Watch file="MetalAccounting/GoldMoneyParser.cs" line="51" offsetX="599" offsetY="750" expression="memo" liveUpdate="False" />
+  </MonoDevelop.Ide.DebuggingService.PinnedWatches>
+</Properties>
