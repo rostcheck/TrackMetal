@@ -20,7 +20,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>GoldMoney-Joint-Gold.txt GoldMoney-Noni-Silver.txt GoldMoney-Noni-Gold.txt GoldMoney-Joint-silver.txt GoldMoney-Joint-platinum.txt</Commandlineparameters>
+    <Commandlineparameters>*.txt</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>

@@ -12,10 +12,12 @@ namespace MetalAccounting
 		public MetalTypeEnum MetalType { get; set; }
 		public decimal SaleWeight { get; set; }
 		public ValueInCurrency SalePrice { get; set; }
+		public string Service { get; set; }
 
 		public TaxableSale(Lot fromLot, MetalAmount amount, ValueInCurrency salePrice)
 		{
 			this.LotID = fromLot.LotID;
+			this.Service = fromLot.Service;
 			this.PurchaseDate = fromLot.PurchaseDate;
 			this.WeightUnit = fromLot.WeightUnit;
 			decimal saleWeight = Utils.ConvertWeight(amount.Weight, amount.WeightUnit, this.WeightUnit);

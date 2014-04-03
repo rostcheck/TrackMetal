@@ -5,17 +5,16 @@ using System.Text.RegularExpressions;
 
 namespace MetalAccounting
 {
-	public class GoldMoneyParser : IFileParser
+	public class GoldMoneyParser : ParserBase, IFileParser
 	{
 		const int headerLines = 1;
-		public GoldMoneyParser ()
+		public GoldMoneyParser () : base("GoldMoney")
 		{
 		}
 
 		public List<Transaction> Parse(string fileName)
 		{
-			if (!fileName.Contains("GoldMoney"))
-				throw new Exception("Filename " + fileName + " should contain 'GoldMoney' to be parsed by GoldMoneyParser");
+			VerifyFilename(fileName);
 			string accountName = ParseAccountNameFromFilename(fileName);
 
 			List<Transaction> transactionList = new List<Transaction>();
@@ -112,16 +111,6 @@ namespace MetalAccounting
 				throw new Exception("Cannot parse transfer transaction id name from memo " + memo);
 		}
 
-		private static string ParseAccountNameFromFilename(string fileName)
-		{
-			Regex r = new Regex(@"^GoldMoney-(?<account>\w+)-");
-			Match m = r.Match(fileName);
-			if (m.Success)
-				return m.Groups["account"].Value;
-			else
-				throw new Exception("Cannot parse account name from filename " + fileName);
-		}
-
 		private static MetalTypeEnum ParseMetalTypeFromFilename(string filenameIn)
 		{
 			Regex r = new Regex(@"^GoldMoney-(?<account>\w+)-(?<metal>\w+)");
@@ -147,22 +136,11 @@ namespace MetalAccounting
 		private static decimal ParseAmountPaid(string memo, CurrencyUnitEnum currencyUnit)
 		{
 			return ParseAmount(memo, currencyUnit);
-//			string memo = memoIn.ToLower();
-//			if (memo.Contains("purchase"))
-//
-//			else
-//				return 0.0m;
 		}
 
 		private static decimal ParseAmountReceived(string memo, CurrencyUnitEnum currencyUnit)
 		{
 			return ParseAmount(memo, currencyUnit);
-//			string memo = memoIn.ToLower();
-//			// || (memo.Contains("exchange") && memo.Contains("goldmoney fee: 0.00%")
-//			if (memo.Contains("sale"))
-//				return ParseAmount(memoIn, currencyUnit);
-//			else
-//				return 0.0m;
 		}
 
 		private static CurrencyUnitEnum ParseCurrencyUnit(string memo)
@@ -173,7 +151,7 @@ namespace MetalAccounting
 			// TODO: add other currencies
 			return currencyUnit;
 		}
-
+					
 		/*
 		 * Example memo fields to parse amount paid from:
 		 * GoldGram purchase by e-check on 2004-Sep-07 for $241.00 plus a $3 processing fee (at a spot rate of $12.747/gg plus the Standard rate of 2.99%).

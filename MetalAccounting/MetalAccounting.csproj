@@ -48,6 +48,12 @@
     <Compile Include="TransactionTypeEnum.cs" />
     <Compile Include="ValueInCurrency.cs" />
     <Compile Include="BullionVaultParser.cs" />
+    <Compile Include="ParserBase.cs" />
+    <Compile Include="ITransactionListProcessor.cs" />
+    <Compile Include="MatchAlgorithmFactory.cs" />
+    <Compile Include="MatchAlgorithmEnum.cs" />
+    <Compile Include="MatchAcrossTransactionsAlgorithm.cs" />
+    <Compile Include="MatchSimilarTransactions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -45,15 +45,26 @@ namespace MetalAccounting
 				history.Add("Set account to " + value);
 			}
 		}
+
+		public string Service
+		{
+			get
+			{
+				return service;
+			}
+		}
+
 		private decimal currentWeight;
 		private List<string> history;
 		private string vault;
 		private string account;
+		private string service;
 
-		public Lot(string transactionID, DateTime purchaseDate, decimal originalWeight, MetalWeightEnum weightUnit, 
+		public Lot(string service, string transactionID, DateTime purchaseDate, decimal originalWeight, MetalWeightEnum weightUnit, 
 			ValueInCurrency price, MetalTypeEnum metalType, string vault, string account)
 		{
 			history = new List<string>();
+			this.service = service;
 			this.LotID = transactionID;
 			this.PurchaseDate = purchaseDate;
 			this.OriginalWeight = originalWeight;

@@ -16,17 +16,18 @@ namespace TrackMetal
 				return;
 			}
 
-			MetalStorageService storageService = new MetalStorageService("GoldMoney");
-
+			MetalStorageService storageService = new MetalStorageService();
 			GoldMoneyParser goldMoneyParser = new GoldMoneyParser();
 			BullionVaultParser bullionVaultParser = new BullionVaultParser();
 			List<Transaction> transactionList = new List<Transaction>();
 			foreach (string filename in args)
 			{
-				if (filename.Contains("GoldMoney"))
+				if (filename.Contains("tm-"))
+					continue;
+				else if (filename.Contains("GoldMoney"))
 					transactionList.AddRange(goldMoneyParser.Parse(filename));
 				else if (filename.Contains("BullionVault"))
-					transactionList.AddRange(bullionVaultParser.Parse(filename));new List<Transaction>();
+					transactionList.AddRange(bullionVaultParser.Parse(filename));
 			}
 			transactionList = transactionList.OrderBy(s => s.DateAndTime).ToList();
 			storageService.ApplyTransactions(transactionList);
@@ -80,42 +81,52 @@ namespace TrackMetal
 			}
 			return result;
 		}
+
 		public static void PrintResults(MetalStorageService storageService)
 		{
-			Console.WriteLine("Results for " + storageService.Name);
-			Console.WriteLine("");
+			Console.WriteLine();
 			Console.WriteLine("Sales:");
-			string formatString = "Lot ID {0}: Bought {1} {2}, sold {3} {4} for ${5:0.00}, adjusted basis ${6:0.00}, net gain ${7:0.00}";
+			PrintCapitalGains(storageService.Sales);
+			Console.WriteLine("");
+			Console.WriteLine("Capital gains 2013");
+			PrintCapitalGains(storageService.Sales.Where(s => s.SaleDate.Year == 2013).ToList());
+			ExportCapitalGains(storageService.Sales.Where(s => s.SaleDate.Year == 2013).ToList());
 
-			foreach (TaxableSale sale in storageService.Sales.OrderBy(s => s.PurchaseDate).ToList())
+			Console.WriteLine();
+			Console.WriteLine("Remaining lots:");
+			string formatString = "Lot ID {0} @ {1} in {2}: bought {3}, remaining {4} {5} {6}";
+			foreach (Lot lot in storageService.Lots.Where(s => s.CurrentWeight(MetalWeightEnum.Gram) > 0.0m)
+				.OrderBy(s => s.PurchaseDate).ToList())
 			{
-				string formatted = string.Format(formatString, sale.LotID, sale.MetalType.ToString().ToLower(),
+				string formatted = string.Format(formatString, lot.LotID, lot.Service, lot.Vault, lot.PurchaseDate.ToShortDateString(),
+					lot.CurrentWeight(lot.WeightUnit), lot.WeightUnit, lot.MetalType);
+				Console.WriteLine(formatted);
+			}
+		}
+
+		public static void PrintCapitalGains(List<TaxableSale> sales)
+		{
+			string formatString = "{0} Lot ID {1}: Bought {2} {3}, sold {4} {5} for ${6:0.00}, adjusted basis ${7:0.00}, net gain ${8:0.00}";
+
+			foreach (TaxableSale sale in sales.OrderBy(s => s.PurchaseDate).ToList())
+			{
+				string formatted = string.Format(formatString, sale.Service, sale.LotID, sale.MetalType.ToString().ToLower(),
 					sale.PurchaseDate.ToShortDateString(), sale.SaleWeight,	sale.SaleDate.ToShortDateString(), 
 					sale.SalePrice.Value, sale.AdjustedBasis.Value, sale.SalePrice.Value - sale.AdjustedBasis.Value);
 				Console.WriteLine(formatted);
 			}
-			Console.WriteLine("");
-			Console.WriteLine("Remaining lots:");
-			formatString = "Lot ID {0}: {1} bought {2}, remaining {3} {4} {5}";
-			foreach (Lot lot in storageService.Lots.Where(s => s.CurrentWeight(MetalWeightEnum.Gram) > 0.0m)
-				.OrderBy(s => s.PurchaseDate).ToList())
-			{
-				string formatted = string.Format(formatString, lot.LotID, lot.Vault, lot.PurchaseDate.ToShortDateString(),
-					lot.CurrentWeight(lot.WeightUnit), lot.WeightUnit, lot.MetalType);
-				Console.WriteLine(formatted);
-			}
-			ExportResults(storageService);
+
 		}
 
-		public static void ExportResults(MetalStorageService storageService)
+		public static void ExportCapitalGains(List<TaxableSale> sales)
 		{
-			StreamWriter sw = new StreamWriter("results.txt");
-			sw.WriteLine("Lot ID\tMetal\tBought Date\tSold Date\tAdjusted Basis\tSale Price\tNet Gain");
-			string formatString = "{0}\t{1}\t{2}\t{3}\t{4:0.00}\t{5:0.00}\t{6:0.00}";
+			StreamWriter sw = new StreamWriter("tm-gains.txt");
+			sw.WriteLine("Service\tLot ID\tMetal\tBought Date\tSold Date\tAdjusted Basis\tSale Price\tNet Gain");
+			string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5:0.00}\t{6:0.00}\t{7:0.00}";
 
-			foreach (TaxableSale sale in storageService.Sales.OrderBy(s => s.PurchaseDate).ToList())
+			foreach (TaxableSale sale in sales.OrderBy(s => s.PurchaseDate).ToList())
 			{
-				string formatted = string.Format(formatString, sale.LotID, sale.MetalType.ToString().ToLower(),
+				string formatted = string.Format(formatString, sale.Service,sale.LotID, sale.MetalType.ToString().ToLower(),
 					sale.PurchaseDate.ToShortDateString(), sale.SaleDate.ToShortDateString(), 
 					sale.AdjustedBasis.Value, sale.SalePrice.Value, sale.SalePrice.Value - sale.AdjustedBasis.Value);
 				sw.WriteLine(formatted);

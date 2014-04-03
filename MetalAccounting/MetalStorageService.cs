@@ -8,15 +8,6 @@ namespace MetalAccounting
 	{
 		private List<Lot> lots;
 		private List<TaxableSale> sales;
-		private string name;
-
-		public string Name
-		{
-			get
-			{
-				return name;
-			}
-		}
 
 		public List<Lot> Lots
 		{
@@ -34,39 +25,40 @@ namespace MetalAccounting
 			}
 		}
 
-		public MetalStorageService(string name)
+		public MetalStorageService()
 		{
 			lots = new List<Lot>();
 			sales = new List<TaxableSale>();
-			this.name = name;
 		}
 
 		public void ApplyTransactions(List<Transaction> transactionList)
 		{
 			transactionList = FormTransfers(transactionList);
+			transactionList = MatchAlgorithmFactory.Create(MatchAlgorithmEnum.MatchAcrossTransactions)
+				.FormLikeKindExchanges(transactionList);
 			foreach (Transaction transaction in transactionList.OrderBy(s => s.DateAndTime))
 			{
 				switch (transaction.TransactionType)
 				{
 					case TransactionTypeEnum.Purchase:
 					case TransactionTypeEnum.PurchaseViaExchange:
-						Console.WriteLine(string.Format("{0} received {1:0.000} {2}s {3} to account {4}", 
-							transaction.DateAndTime.ToShortDateString(), transaction.AmountReceived, 
+						Console.WriteLine(string.Format("{0} {1} received {2:0.000} {3}s {4} to account {5}", 
+							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountReceived, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(),
 							transaction.Account));
 						PurchaseNewLot(transaction);
 						break;
 					case TransactionTypeEnum.Sale:
 					case TransactionTypeEnum.SaleViaExchange:
-						Console.WriteLine(string.Format("{0} sold {1:0.000} {2}s {3} from account {4}", 
-							transaction.DateAndTime.ToShortDateString(), transaction.AmountPaid, 
+						Console.WriteLine(string.Format("{0} {1} sold {2:0.000} {3}s {4} from account {5}", 
+							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountPaid, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(), 
 							transaction.Account));
 						ProcessSale(transaction);
 						break;
 					case TransactionTypeEnum.Transfer:
-						Console.WriteLine(string.Format("{0} transferred {1:0.000} {2}s {3} from account {4} vault {5} to account {6} vault {7}",
-							transaction.DateAndTime.ToShortDateString(), transaction.AmountReceived, 
+						Console.WriteLine(string.Format("{0} {1} transferred {2:0.000} {3}s {4} from account {5}, vault {6} to account {7}, vault {8}",
+							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountReceived, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(), 
 							transaction.TransferFromAccount, transaction.TransferFromVault, transaction.Account, transaction.Vault));
 						ProcessTransfer(transaction);
@@ -117,8 +109,7 @@ namespace MetalAccounting
 				}
 
 				// Set the source vault property in the receipt side
-				receiveTransaction.TransferFromVault = sourceTransaction.Vault;
-				receiveTransaction.TransferFromAccount = sourceTransaction.Account;
+				receiveTransaction.MakeTransfer(sourceTransaction.Account, sourceTransaction.Vault);
 				sourceTransactions.Add(sourceTransaction);
 			}
 			foreach (Transaction sourceTransaction in sourceTransactions)
@@ -133,6 +124,7 @@ namespace MetalAccounting
 		{
 			return transactionList.Where(
 				s => s.TransactionID == transaction.TransactionID
+				&& s.Service == transaction.Service
 				&& s.AmountPaid > 0.0m
 				&& !s.Memo.Contains("Fee")).FirstOrDefault();
 		}
@@ -141,16 +133,18 @@ namespace MetalAccounting
 		{
 			return transactionList.Where(
 				s => s.TransactionID == transaction.TransactionID
+				&& s.Service == transaction.Service
 				&& s.AmountReceived > 0.0m
 				&& !s.Memo.Contains("Fee")).FirstOrDefault();
 		}
-			
+						
 		// All that happens in a transfer is the vault changes
 		private void ProcessTransfer(Transaction transaction)
 		{
 			// Find the open lots in the current vault with the correct metal type
 			List<Lot> availableLots = lots.Where(
-				s => s.MetalType == transaction.MetalType 
+				s => s.Service == transaction.Service
+				&& s.MetalType == transaction.MetalType 
 				&& s.Vault == transaction.TransferFromVault 
 				&& s.Account == transaction.TransferFromAccount
 				&& s.CurrentWeight(transaction.WeightUnit) > 0)
@@ -164,7 +158,7 @@ namespace MetalAccounting
 				{
 					// Split lot and transfer part of it
 					amount.Decrease(amount.Amount, amount.WeightUnit);
-					Lot newLot = new Lot(lot.LotID, lot.PurchaseDate, lot.OriginalWeight, amount.WeightUnit, 
+					Lot newLot = new Lot(lot.Service, lot.LotID, lot.PurchaseDate, lot.OriginalWeight, amount.WeightUnit, 
 						lot.OriginalPrice, lot.MetalType, transaction.Vault, transaction.Account);
 					lots.Add(newLot);
 					break;
@@ -186,7 +180,8 @@ namespace MetalAccounting
 				MetalWeightEnum.Gram);
 			MetalAmount remainingAmountToSell = new MetalAmount(transaction.AmountPaid, transaction.MetalType, transaction.WeightUnit);
 			List<Lot> availableLots = lots.Where(
-				s => s.MetalType == transaction.MetalType
+				s => s.Service == transaction.Service
+				&& s.MetalType == transaction.MetalType
 				&& s.Account == transaction.Account
 				&& s.Vault == transaction.Vault
 				&& s.CurrentWeight(transaction.WeightUnit) > 0.0m)
@@ -211,7 +206,7 @@ namespace MetalAccounting
 
 		private void PurchaseNewLot(Transaction transaction)
 		{
-			Lot newLot = new Lot(transaction.TransactionID, transaction.DateAndTime, transaction.AmountReceived, 
+			Lot newLot = new Lot(transaction.Service, transaction.TransactionID, transaction.DateAndTime, transaction.AmountReceived, 
 				transaction.WeightUnit, 
 				new ValueInCurrency(transaction.AmountPaid, transaction.CurrencyUnit, transaction.DateAndTime),
 				transaction.MetalType, transaction.Vault, transaction.Account);
@@ -224,7 +219,8 @@ namespace MetalAccounting
 				                            transaction.Vault, transaction.AmountPaid, transaction.WeightUnit, 
 											transaction.MetalType);
 			List<Lot> availableLots = lots.Where(
-				s => s.MetalType == fee.MetalType 
+				s => s.Service == transaction.Service
+				&& s.MetalType == fee.MetalType 
 				&& s.Account == transaction.Account
 				&& s.Vault == transaction.Vault 
 				&& s.CurrentWeight(fee.WeightUnit) > 0)

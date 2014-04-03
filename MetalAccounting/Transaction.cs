@@ -36,6 +36,77 @@ namespace MetalAccounting
 			this.MetalType = metalType;
 			this.Memo = memo;
 		}
+
+		public decimal Weight
+		{
+			get
+			{
+				switch (this.TransactionType)
+				{
+					case TransactionTypeEnum.Purchase:
+					case TransactionTypeEnum.PurchaseViaExchange:
+						return AmountReceived;
+					case TransactionTypeEnum.Sale:
+					case TransactionTypeEnum.SaleViaExchange:
+					case TransactionTypeEnum.StorageFeeInMetal:
+						return AmountPaid;
+					default:
+						return 0.0m;
+				}
+			}
+
+			set
+			{
+				switch (this.TransactionType)
+				{
+					case TransactionTypeEnum.Purchase:
+					case TransactionTypeEnum.PurchaseViaExchange:
+						AmountReceived = value;
+						break;
+					case TransactionTypeEnum.Sale:
+					case TransactionTypeEnum.SaleViaExchange:
+					case TransactionTypeEnum.StorageFeeInMetal:
+						AmountPaid = value;
+						break;
+				}
+			}
+		}
+
+		public decimal GetWeightInUnits(MetalWeightEnum toWeightUnit)
+		{
+			return Utils.ConvertWeight(Weight, WeightUnit, toWeightUnit);
+		}
+
+		public Transaction Duplicate()
+		{
+			return new Transaction(Service, Account, DateAndTime, TransactionID, TransactionType,
+				Vault, AmountPaid, CurrencyUnit, AmountReceived, WeightUnit, MetalType, Memo);
+		}
+
+		public void MakeTransfer(string account, string vault)
+		{
+			this.TransactionType = TransactionTypeEnum.Transfer;
+			this.TransferFromAccount = account;
+			this.TransferFromVault = vault;
+		}
+
+		// Returns TransactionTypeEnum.Indeterminate if the type has no opposite
+		public TransactionTypeEnum GetOppositeTransactionType()
+		{
+			switch (TransactionType)
+			{
+				case TransactionTypeEnum.Purchase:
+					return TransactionTypeEnum.Sale;
+				case TransactionTypeEnum.Sale:
+					return TransactionTypeEnum.Purchase;
+				case TransactionTypeEnum.PurchaseViaExchange:
+					return TransactionTypeEnum.SaleViaExchange;
+				case TransactionTypeEnum.SaleViaExchange:
+					return TransactionTypeEnum.PurchaseViaExchange;
+				default:
+					return TransactionTypeEnum.Indeterminate;
+			}
+		}
 	}
 }
 
