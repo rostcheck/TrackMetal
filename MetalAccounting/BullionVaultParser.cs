@@ -55,6 +55,8 @@ namespace MetalAccounting
 					amountPaid = weight;
 					amountReceived = totalCompensation;
 				}
+				else if (transactionType == TransactionTypeEnum.StorageFeeInCurrency)
+					amountPaid = Math.Abs(totalCompensation);
 				else
 					throw new Exception("Unknown transaction type " + transactionType);	
 				CurrencyUnitEnum currencyUnit = GetCurrencyUnit(fields[6]);
@@ -106,6 +108,8 @@ namespace MetalAccounting
 					return TransactionTypeEnum.Purchase;
 				case "sell":
 					return TransactionTypeEnum.Sale;
+				case "storage_fee":
+					return TransactionTypeEnum.StorageFeeInCurrency;
 				default:
 					throw new Exception("Transaction type " + transactionType + " not recognized");
 			}

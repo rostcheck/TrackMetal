@@ -63,11 +63,12 @@ namespace MetalAccounting
 							transaction.TransferFromAccount, transaction.TransferFromVault, transaction.Account, transaction.Vault));
 						ProcessTransfer(transaction);
 							break;
+					case TransactionTypeEnum.StorageFeeInCurrency:
+						ApplyStorageFeeInCurrency(transaction);
+						break;
 					case TransactionTypeEnum.StorageFeeInMetal:
 						ApplyStorageFeeInMetal(transaction);
 						break;
-					case TransactionTypeEnum.StorageFeeInCurrency:
-						throw new NotImplementedException("Storage fees in currency not implemented");
 				}
 			}
 		}
@@ -215,6 +216,9 @@ namespace MetalAccounting
 
 		private void ApplyStorageFeeInMetal(Transaction transaction)
 		{
+			if (transaction.TransactionType != TransactionTypeEnum.StorageFeeInMetal)
+				throw new Exception("Wrong transaction type " + transaction.TransactionType + " passed to ApplyStorageFeeInMetal");
+
 			AmountInMetal fee = new AmountInMetal(transaction.DateAndTime, transaction.TransactionID, 
 				                            transaction.Vault, transaction.AmountPaid, transaction.WeightUnit, 
 											transaction.MetalType);
@@ -222,9 +226,11 @@ namespace MetalAccounting
 				s => s.Service == transaction.Service
 				&& s.MetalType == fee.MetalType 
 				&& s.Account == transaction.Account
-				&& s.Vault == transaction.Vault 
 				&& s.CurrentWeight(fee.WeightUnit) > 0)
 				.OrderBy(s => s.PurchaseDate).ToList();
+			if (transaction.Vault.ToLower() != "any")
+				availableLots = availableLots.Where(s => s.Vault == transaction.Vault).ToList();
+
 			foreach(Lot lot in availableLots)
 			{
 				if (lot.CurrentWeight(fee.WeightUnit) >= fee.Amount)
@@ -241,6 +247,27 @@ namespace MetalAccounting
 			}
 			if (fee.Amount > 0.0m)
 				throw new Exception("Storage fee exceeds available funds");
+		}
+
+		private void ApplyStorageFeeInCurrency(Transaction transaction)
+		{
+			if (transaction.TransactionType != TransactionTypeEnum.StorageFeeInCurrency)
+				throw new Exception("Wrong transaction type " + transaction.TransactionType + " passed to ApplyStorageFeeInCurrency");
+				
+			List<Lot> availableLots = lots.Where(
+				                          s => s.Service == transaction.Service
+				                          && s.MetalType == transaction.MetalType
+				                          && s.Account == transaction.Account
+				                          && s.CurrentWeight(transaction.WeightUnit) > 0)
+				.OrderBy(s => s.PurchaseDate).ToList();
+			if (transaction.Vault.ToLower() != "any")
+				availableLots = availableLots.Where(s => s.Vault == transaction.Vault).ToList();
+
+			// Apply fees to the first available lot
+			if (availableLots.Count == 0)
+				throw new Exception("No available lots to allocate storage fee to");
+
+			availableLots[0].ApplyFeeInCurrency(new ValueInCurrency(transaction.AmountPaid, transaction.CurrencyUnit, transaction.DateAndTime));
 		}
 	}
 }

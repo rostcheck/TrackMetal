@@ -84,10 +84,7 @@ namespace MetalAccounting
 						&& s.TransactionType == oppositeTransactionType
 						&& s.AmountReceived >= (.9m * transaction.AmountPaid))
 						.OrderBy(s => s.DateAndTime).FirstOrDefault();
-//				if (returnTransaction != null)
-//				{
-//					Console.WriteLine("boo");
-//				}
+
 				return returnTransaction;
 			}
 		}

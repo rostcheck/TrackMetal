@@ -9,7 +9,13 @@ namespace MetalAccounting
 		public DateTime PurchaseDate { get; set; }
 		public decimal OriginalWeight { get; set; }
 		public ValueInCurrency OriginalPrice { get; set; }
-		public ValueInCurrency AdjustedPrice { get; set; }
+		public ValueInCurrency AdjustedPrice
+		{ 
+			get
+			{
+				return adjustedPrice;
+			}
+		}
 		public MetalWeightEnum WeightUnit { get; set; }
 		public MetalTypeEnum MetalType { get; set; }	
 		public string Vault 
@@ -59,6 +65,7 @@ namespace MetalAccounting
 		private string vault;
 		private string account;
 		private string service;
+		private ValueInCurrency adjustedPrice;
 
 		public Lot(string service, string transactionID, DateTime purchaseDate, decimal originalWeight, MetalWeightEnum weightUnit, 
 			ValueInCurrency price, MetalTypeEnum metalType, string vault, string account)
@@ -72,7 +79,7 @@ namespace MetalAccounting
 			this.WeightUnit = weightUnit;
 			this.OriginalPrice = price;
 			this.MetalType = metalType;
-			this.AdjustedPrice = new ValueInCurrency(OriginalPrice);
+			this.adjustedPrice = new ValueInCurrency(OriginalPrice);
 			this.vault = vault;
 			this.account = account;
 			history.Add(string.Format("Opened lot {0} bought {1} {2} {3} for {4} {5}, vault {6}, account {7}", 
