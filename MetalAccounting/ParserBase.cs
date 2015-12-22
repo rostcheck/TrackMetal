@@ -25,8 +25,19 @@ namespace MetalAccounting
 				throw new Exception("Cannot parse account name from filename " + fileName);
 		}
 
+		protected string ParseServiceNameFromFilename(string fileName)
+		{
+			var parts = fileName.Split('-');
+			if (serviceName.ToLower().Contains("generic"))
+				serviceName = parts[0];
+			return parts[0];
+		}
+
 		protected void VerifyFilename(string fileName)
 		{
+			if (serviceName.ToLower().Contains("generic"))
+				return; // Generic parser will accept anything
+			
 			if (!fileName.Contains(serviceName))
 				throw new Exception(string.Format("Filename {0} should contain '{1}' to be parsed by {2}Parser",
 					fileName, serviceName, serviceName));

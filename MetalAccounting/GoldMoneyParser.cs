@@ -209,6 +209,12 @@ namespace MetalAccounting
 					if (apparentTransactionType == TransactionTypeEnum.Indeterminate)
 						return GetExchangeType(memo);
 					else
+					{
+						// If the transaction is a exchange of a metal for the same metal, this is really a transfer
+						if (IsFromAndToSameMetal(memo))
+						{
+							return TransactionTypeEnum.Transfer;
+						}
 						switch (apparentTransactionType)
 						{
 							case TransactionTypeEnum.Purchase:
@@ -218,9 +224,27 @@ namespace MetalAccounting
 							default:
 								return apparentTransactionType;
 						}
+					}
 				default:
 					return GetOtherType(transactionType, memo);
 			}
+		}
+
+		private static bool IsFromAndToSameMetal(string memo)
+		{
+			memo = memo.ToLower();
+			var metalPairs = new string[] {
+				"silver-to-silver",
+				"gold-to-gold",
+				"platinum-to-platinum",
+				"palladium-to-palladium"
+			};
+			foreach (string pair in metalPairs)
+			{
+				if (memo.Contains(pair))
+					return true;
+			}
+			return false;
 		}
 
 		private static TransactionTypeEnum GetOtherType(string transactionType, string memo)

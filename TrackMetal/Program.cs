@@ -19,20 +19,23 @@ namespace TrackMetal
 			MetalStorageService storageService = new MetalStorageService();
 			GoldMoneyParser goldMoneyParser = new GoldMoneyParser();
 			BullionVaultParser bullionVaultParser = new BullionVaultParser();
+			GenericCsvParser genericCsvParser = new GenericCsvParser();
 			List<Transaction> transactionList = new List<Transaction>();
 			foreach (string filename in args)
 			{
-				if (filename.Contains("tm-"))
+				if (filename.Contains("tm-") || filename == "transactions.txt")
 					continue;
 				else if (filename.Contains("GoldMoney"))
 					transactionList.AddRange(goldMoneyParser.Parse(filename));
 				else if (filename.Contains("BullionVault"))
 					transactionList.AddRange(bullionVaultParser.Parse(filename));
+				else
+					transactionList.AddRange(genericCsvParser.Parse(filename));
 			}
 			transactionList = transactionList.OrderBy(s => s.DateAndTime).ToList();
 			storageService.ApplyTransactions(transactionList);
 			PrintResults(storageService);
-
+			storageService.DumpTransactions("transactions.txt", transactionList);
 			string command = "";
 			do {
 				ProcessCommand(command, storageService);

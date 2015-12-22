@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace MetalAccounting
 {
@@ -71,6 +72,26 @@ namespace MetalAccounting
 						break;
 				}
 			}
+		}
+
+		public void DumpTransactions(string filename, List<Transaction> transactions)
+		{
+			StreamWriter sw = new StreamWriter(filename);
+			sw.WriteLine("Date\tService\tType\tMetal\tWeight\tUnit\tAccount\tAmountPaid\tAmountReceived\tCurrency\tVault\tTransactionId\tMemo");
+			string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}";
+
+			foreach (var transaction in transactions.OrderBy(s => s.DateAndTime).ToList())
+			{
+				
+				string formatted = string.Format(formatString, transaction.DateAndTime, transaction.Service, 
+					transaction.TransactionType.ToString(), 
+					transaction.MetalType.ToString().ToLower(),
+					transaction.Weight, transaction.WeightUnit,
+					transaction.Account, transaction.AmountPaid, transaction.AmountReceived, 
+					transaction.CurrencyUnit, transaction.Vault, transaction.TransactionID, transaction.Memo);
+				sw.WriteLine(formatted);
+			}
+			sw.Close();
 		}
 
 		// For transfers, combine both sides into one transaction

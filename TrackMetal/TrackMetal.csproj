@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7EDBFFA7-750B-4201-841E-4ED72A0197A9}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -44,5 +44,8 @@
       <Project>{04D95C10-2D35-4F7F-A23D-2C3DC5F02062}</Project>
       <Name>MetalAccounting</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.txt" />
   </ItemGroup>
 </Project>
