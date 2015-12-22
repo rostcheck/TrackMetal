@@ -88,11 +88,8 @@ namespace TrackMetal
 		public static void PrintResults(MetalStorageService storageService)
 		{
 			Console.WriteLine();
-			Console.WriteLine("Sales:");
-			PrintCapitalGains(storageService.Sales);
-			Console.WriteLine("");
-			Console.WriteLine("Capital gains 2013");
-			PrintCapitalGains(storageService.Sales.Where(s => s.SaleDate.Year == 2013).ToList());
+			Console.WriteLine("Output list of all transactions to tm-transactions.txt");
+			Console.WriteLine("Output capital gains to tm-gains.txt files (by year)");
 			ExportCapitalGains(storageService.Sales);
 
 			Console.WriteLine();
@@ -104,6 +101,7 @@ namespace TrackMetal
 				string formatted = string.Format(formatString, lot.LotID, lot.Service, lot.Vault, lot.PurchaseDate.ToShortDateString(),
 					lot.CurrentWeight(lot.WeightUnit), lot.WeightUnit, lot.MetalType);
 				Console.WriteLine(formatted);
+				ShowLot(lot.LotID, storageService);
 			}
 		}
 
@@ -118,13 +116,11 @@ namespace TrackMetal
 					sale.SalePrice.Value, sale.AdjustedBasis.Value, sale.SalePrice.Value - sale.AdjustedBasis.Value);
 				Console.WriteLine(formatted);
 			}
-
 		}
 
 		public static void ExportCapitalGains(List<TaxableSale> sales)
 		{
-			var years = sales.Select(s => s.SaleDate.Year).Distinct()
-				;
+			var years = sales.Select(s => s.SaleDate.Year).Distinct();
 			foreach (var year in years)
 			{
 				StreamWriter sw = new StreamWriter(string.Format("tm-gains-{0}.txt", year));

@@ -129,7 +129,7 @@ namespace MetalAccounting
 			TaxableSale taxableSale = new TaxableSale(this, amount, salePrice);
 			currentWeight = newCurrentWeight;
 			AdjustedPrice.Value = AdjustedPrice.Value * (1.0m - percentOfLotToSell);
-			history.Add(string.Format("{0} sold {1} {2} {3} for {4} {5}", 
+			history.Add(string.Format("{0} sold {1} {2} {3} for {4} {5:0.00}", 
 				salePrice.Date.ToShortDateString(), amount.Weight, amount.WeightUnit, amount.MetalType,
 				salePrice.Currency, salePrice.Value));
 			return taxableSale;
