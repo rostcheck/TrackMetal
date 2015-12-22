@@ -23,7 +23,7 @@ namespace TrackMetal
 			List<Transaction> transactionList = new List<Transaction>();
 			foreach (string filename in args)
 			{
-				if (filename.Contains("tm-") || filename == "transactions.txt")
+				if (filename.Contains("tm-"))
 					continue;
 				else if (filename.Contains("GoldMoney"))
 					transactionList.AddRange(goldMoneyParser.Parse(filename));
@@ -35,7 +35,7 @@ namespace TrackMetal
 			transactionList = transactionList.OrderBy(s => s.DateAndTime).ToList();
 			storageService.ApplyTransactions(transactionList);
 			PrintResults(storageService);
-			storageService.DumpTransactions("transactions.txt", transactionList);
+			storageService.DumpTransactions("tm-transactions.txt", transactionList);
 			string command = "";
 			do {
 				ProcessCommand(command, storageService);
@@ -93,7 +93,7 @@ namespace TrackMetal
 			Console.WriteLine("");
 			Console.WriteLine("Capital gains 2013");
 			PrintCapitalGains(storageService.Sales.Where(s => s.SaleDate.Year == 2013).ToList());
-			ExportCapitalGains(storageService.Sales.Where(s => s.SaleDate.Year == 2013).ToList());
+			ExportCapitalGains(storageService.Sales);
 
 			Console.WriteLine();
 			Console.WriteLine("Remaining lots:");
@@ -123,18 +123,23 @@ namespace TrackMetal
 
 		public static void ExportCapitalGains(List<TaxableSale> sales)
 		{
-			StreamWriter sw = new StreamWriter("tm-gains.txt");
-			sw.WriteLine("Service\tLot ID\tMetal\tBought Date\tSold Date\tAdjusted Basis\tSale Price\tNet Gain");
-			string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5:0.00}\t{6:0.00}\t{7:0.00}";
-
-			foreach (TaxableSale sale in sales.OrderBy(s => s.PurchaseDate).ToList())
+			var years = sales.Select(s => s.SaleDate.Year).Distinct()
+				;
+			foreach (var year in years)
 			{
-				string formatted = string.Format(formatString, sale.Service,sale.LotID, sale.MetalType.ToString().ToLower(),
-					sale.PurchaseDate.ToShortDateString(), sale.SaleDate.ToShortDateString(), 
-					sale.AdjustedBasis.Value, sale.SalePrice.Value, sale.SalePrice.Value - sale.AdjustedBasis.Value);
-				sw.WriteLine(formatted);
+				StreamWriter sw = new StreamWriter(string.Format("tm-gains-{0}.txt", year));
+				sw.WriteLine("Service\tLot ID\tMetal\tBought Date\tSold Date\tAdjusted Basis\tSale Price\tNet Gain");
+				string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5:0.00}\t{6:0.00}\t{7:0.00}";
+
+				foreach (TaxableSale sale in sales.Where(s => s.SaleDate.Year == year).OrderBy(s => s.PurchaseDate).ToList())
+				{
+					string formatted = string.Format(formatString, sale.Service,sale.LotID, sale.MetalType.ToString().ToLower(),
+						sale.PurchaseDate.ToShortDateString(), sale.SaleDate.ToShortDateString(), 
+						sale.AdjustedBasis.Value, sale.SalePrice.Value, sale.SalePrice.Value - sale.AdjustedBasis.Value);
+					sw.WriteLine(formatted);
+				}
+				sw.Close();				
 			}
-			sw.Close();
 		}
 	}
 }

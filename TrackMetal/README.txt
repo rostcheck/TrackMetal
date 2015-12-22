@@ -22,5 +22,22 @@ tab-delimited .txt formats and then consume them. It automatically corrects for 
 output format changes made by these services through time and fixes known issues in their 
 extracts.
 
+When run, it reads all .txt files in its working directory (except for any beginning with "tm-",
+which are its own). File names should, by convention, be named <servicename>-<account>-<subtype>.txt 
+(ex. Goldmoney-Joint-silver.txt). The subtype allows you to divide the transactions in whatever way 
+is convenient - by metal or by transaction type, for example. This is helpful for adding in other costs,
+such as wire transfer fees or shipping costs. TrackMetal combines all the transactions into a single 
+transaction set, on which it operates, so the division does not matter to it. 
 
+The .txt formats for BullionVault and GoldMoney are specific to those services (see the sample files)
+and are produced by downloading reports from those services (see instructions below). Other types use 
+a generic .txt file format as follows:
 
+Date, Vault, Order ID, Type, Amount, Currency, Weight, WeightUnit, Metal, Status, Invoice, Invoice Date
+
+The data should be tab-separated, with a header line. See the sample data files for more info.
+
+After running, TrackMetal will output the following result files:
+
+- tm-gains-<year>.txt: list of the capital gains recorded for that year
+- tm-transactions.txt: a dump of the complete transaction history assembled from all the .txt files
