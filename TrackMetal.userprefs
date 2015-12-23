@@ -1,25 +1,22 @@
 ﻿<Properties GitUserInfo="UsingGIT" StartupItem="TrackMetal/TrackMetal.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="MetalAccounting/MatchAcrossTransactionsAlgorithm.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="TrackMetal/README.txt">
     <Files>
-      <File FileName="MetalAccounting/MetalStorageService.cs" Line="44" Column="4" />
-      <File FileName="MetalAccounting/MatchAcrossTransactionsAlgorithm.cs" Line="30" Column="54" />
-      <File FileName="MetalAccounting/MatchSimilarTransactions.cs" Line="43" Column="45" />
-      <File FileName="MetalAccounting/TransactionTypeEnum.cs" Line="5" Column="2" />
-      <File FileName="MetalAccounting/GoldMoneyParser.cs" Line="216" Column="44" />
-      <File FileName="TrackMetal/README.txt" Line="11" Column="30" />
-      <File FileName="TrackMetal/Program.cs" Line="38" Column="1" />
-      <File FileName="MetalAccounting/BullionVaultParser.cs" Line="25" Column="5" />
-      <File FileName="MetalAccounting/GenericCsvParser.cs" Line="111" Column="37" />
-      <File FileName="MetalAccounting/ParserBase.cs" Line="39" Column="51" />
+      <File FileName="MetalAccounting/MatchSimilarTransactions.cs" Line="1" Column="1" />
+      <File FileName="MetalAccounting/TransactionTypeEnum.cs" Line="1" Column="1" />
+      <File FileName="TrackMetal/README.txt" Line="89" Column="1" />
+      <File FileName="MetalAccounting/BullionVaultParser.cs" Line="1" Column="1" />
       <File FileName="MetalAccounting/MetalTypeEnum.cs" Line="1" Column="1" />
+      <File FileName="MetalAccounting/MetalStorageService.cs" Line="1" Column="1" />
+      <File FileName="MetalAccounting/ParserBase.cs" Line="1" Column="1" />
+      <File FileName="MetalAccounting/MatchAcrossTransactionsAlgorithm.cs" Line="1" Column="1" />
+      <File FileName="MetalAccounting/Lot.cs" Line="1" Column="1" />
+      <File FileName="MetalAccounting/GoldMoneyParser.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/davidr/Documents/Software Projects/Xamarin/TrackMetal/MetalAccounting/GoldMoneyParser.cs" line="253" column="1" />
-      <Breakpoint file="/Users/davidr/Documents/Software Projects/Xamarin/TrackMetal/MetalAccounting/MatchAcrossTransactionsAlgorithm.cs" line="32" column="33" />
-      <Breakpoint file="/Users/davidr/Documents/Software Projects/Xamarin/TrackMetal/MetalAccounting/MetalStorageService.cs" line="38" column="1" />
+      <Breakpoint file="/Users/davidr/Documents/Software Projects/Xamarin/TrackMetal/MetalAccounting/GoldMoneyParser.cs" line="270" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>

@@ -41,3 +41,72 @@ After running, TrackMetal will output the following result files:
 
 - tm-gains-<year>.txt: list of the capital gains recorded for that year
 - tm-transactions.txt: a dump of the complete transaction history assembled from all the .txt files
+
+It also prints out a report of all the open lots, with a summary of their history. History can be 
+complex, as metal may be transferred between services and storage charges may have been applied to 
+lots.
+
+
+Importing Data from GoldMoney
+-----------------------------
+From within GoldMoney, do:
+
+- From "My Holding Menu", select "Statements"
+
+- Insure "Transactions Reports" is selected in the "Select report" dropdown
+
+- Because GoldMoney's export report does not declare the type of metal or the account, you should 
+  download a separate export for each metal type and account (ex. GoldMoney-Joint-Gold.txt):
+    - Select the metal. 
+    - Set the display date to a date before your account was opened. 
+    - Leave "Show metal amount equivalents in this currency" set to "n/a"
+    - Check the box for "Download report as a spreadsheet file"
+
+- Run the report. It should open a spreadsheet in Excel or a compatible spreadsheet program. If an
+  extra blank line appears at the top, delete it.
+
+- From within the spreadsheet, Export or Save As the data to the TrackMetal working directory as a 
+  tab-separated file (.txt) with naming convention like "Goldmoney-<accountname>-<metal>.txt" 
+  (replacing accountname and metal appropriately).
+
+- Continue doing exports for any other metals
+
+
+Importing Data from BullionVault
+-----------------------------
+Importing data from BullionVault is more complex because the transactions, fees, and original 
+goldgram transactions all come from different sources. They are placed into separate text files
+and TrackMetal will merge the data together when it runs.
+
+BullionVault does not provide a sufficient mechanism for downloading its historical data within
+the web interface. For that reason, you must use the GetBullionVaultData utility program - available
+separately at https://bitbucket.org/davidrostcheck/getbullionvaultdata. This program wil use
+BullionVault's published API to query historical data and save it to a file. It requires you to
+input yout BullionVault account name and password. 
+
+After GetBullionVaultData has run, it will produce a tab-delimited .txt file named BullionVault.txt.
+Rename this file to BullionVault-<accountname>-all.txt (ex. BullionVault-Main-all.txt) and move it 
+to the TrackMetal working directory. TrackMetal will import it when it runs.
+
+Additionally, the BullionVault API does not provide a way to get storage fees. You must add the 
+storage fees from an additional source. There are two ways to do this:
+
+- You can manually enter them in a spreadsheet that corresponds to the spreadsheet format used for
+  inport of BullionVault files to TrackMetal (see below), or
+
+- If you have the fees entered in financial software that can output a QIF file, you can output a
+  QIF file and use the utility GetBullionVaultDataFromQIF to convert it to a tab-delimited file
+  suitable for import to TrackMetal. This may require modifying the utility's code.
+
+In either case, the storage fees should be saved to an additional file in the TrackMetal working
+directory, named BullionVault-<accountname>-fees.txt (ex. BullionVault-Main-fees.txt). 
+
+Finally, BullionVault gives you one free gram of gold when you open your account, and this is not
+reflected in the transactions. To account for this, create a tab-delimited file named 
+BullionVault-<accountname>-gold-additional.txt (ex. BullionVault-Main-gold-additional.txt) and 
+place it in the TrackMetal working directory.
+
+The file format expected for the tab-delimited BullionVault data is same as TrackMetal's generic
+file format for spreadsheet data:
+
+Date, Vault, Order ID, Type, Amount, Currency, Weight, WeightUnit, Metal, Status, Invoice, Invoice Date
