@@ -18,6 +18,7 @@ namespace MetalAccounting
 		}
 		public MetalWeightEnum WeightUnit { get; set; }
 		public MetalTypeEnum MetalType { get; set; }	
+		public string ItemType { get; set; }
 		public string Vault 
 		{ 
 			get
@@ -68,7 +69,7 @@ namespace MetalAccounting
 		private ValueInCurrency adjustedPrice;
 
 		public Lot(string service, string transactionID, DateTime purchaseDate, decimal originalWeight, MetalWeightEnum weightUnit, 
-			ValueInCurrency price, MetalTypeEnum metalType, string vault, string account)
+			ValueInCurrency price, MetalTypeEnum metalType, string vault, string account, string itemType = "Generic")
 		{
 			history = new List<string>();
 			this.service = service;
@@ -82,8 +83,9 @@ namespace MetalAccounting
 			this.adjustedPrice = new ValueInCurrency(OriginalPrice);
 			this.vault = vault;
 			this.account = account;
-			history.Add(string.Format("Opened lot {0} bought {1} {2} {3} for {4} {5}, vault {6}, account {7}", 
-				purchaseDate.ToShortDateString(), originalWeight, weightUnit, metalType, price.Value, 
+			this.ItemType = itemType;
+			history.Add(string.Format("Opened lot {0} bought {1} {2} {3} ({4}) for {5} {6}, vault{7}, account {8}", 
+				purchaseDate.ToShortDateString(), originalWeight, weightUnit, metalType, itemType, price.Value, 
 				price.Currency, vault, account));
 		}
 
@@ -119,6 +121,9 @@ namespace MetalAccounting
 			if (this.MetalType != amount.MetalType)
 				throw new Exception("Metal types in Sell() do not match: lot type " + this.MetalType + ", sale type " + amount.MetalType);
 
+			if (this.ItemType != amount.ItemType)
+				throw new Exception("Item types in Sell() do not match: lot type " + this.ItemType + ", sale type " + amount.ItemType);
+			
 			decimal weightToSell = Utils.ConvertWeight(amount.Weight, amount.WeightUnit, this.WeightUnit);
 			decimal percentOfLotToSell = weightToSell / currentWeight;
 
@@ -140,8 +145,11 @@ namespace MetalAccounting
 			if (this.MetalType != desiredAmount.MetalType)
 				throw new Exception("Metal types in GetAmountToSell() do not match: lot type " + this.MetalType + ", sale type " + desiredAmount.MetalType);
 
+			if (this.ItemType != desiredAmount.ItemType)
+				throw new Exception("Item types in GetAmountToSell() do not match: lot type " + this.ItemType + ", sale type " + desiredAmount.ItemType);
+
 			decimal desiredWeight = Utils.ConvertWeight(desiredAmount.Weight, desiredAmount.WeightUnit, this.WeightUnit);
-			return new MetalAmount(currentWeight > desiredWeight ? desiredWeight : currentWeight, this.MetalType, this.WeightUnit);
+			return new MetalAmount(currentWeight > desiredWeight ? desiredWeight : currentWeight, this.MetalType, this.WeightUnit, this.ItemType);
 		}
 	}
 }

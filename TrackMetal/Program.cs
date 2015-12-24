@@ -94,12 +94,12 @@ namespace TrackMetal
 
 			Console.WriteLine();
 			Console.WriteLine("Remaining lots:");
-			string formatString = "Lot ID {0} @ {1} in {2}: bought {3}, remaining {4} {5} {6}";
+			string formatString = "Lot ID {0} @ {1} in {2}: bought {3}, remaining {4} {5} {6} {7}";
 			foreach (Lot lot in storageService.Lots.Where(s => s.CurrentWeight(MetalWeightEnum.Gram) > 0.0m)
 				.OrderBy(s => s.PurchaseDate).ToList())
 			{
 				string formatted = string.Format(formatString, lot.LotID, lot.Service, lot.Vault, lot.PurchaseDate.ToShortDateString(),
-					lot.CurrentWeight(lot.WeightUnit), lot.WeightUnit, lot.MetalType);
+					lot.CurrentWeight(lot.WeightUnit), lot.WeightUnit, lot.MetalType, lot.ItemType);
 				Console.WriteLine(formatted);
 				ShowLot(lot.LotID, storageService);
 			}
@@ -107,7 +107,7 @@ namespace TrackMetal
 
 		public static void PrintCapitalGains(List<TaxableSale> sales)
 		{
-			string formatString = "{0} Lot ID {1}: Bought {2} {3}, sold {4} {5} for ${6:0.00}, adjusted basis ${7:0.00}, net gain ${8:0.00}";
+			string formatString = "{0} Lot ID {1}: Bought {2} {3} ({4}), sold {5} {6} for ${7:0.00}, adjusted basis ${8:0.00}, net gain ${9:0.00}";
 
 			foreach (TaxableSale sale in sales.OrderBy(s => s.PurchaseDate).ToList())
 			{
@@ -124,12 +124,13 @@ namespace TrackMetal
 			foreach (var year in years)
 			{
 				StreamWriter sw = new StreamWriter(string.Format("tm-gains-{0}.txt", year));
-				sw.WriteLine("Service\tLot ID\tMetal\tBought Date\tSold Date\tAdjusted Basis\tSale Price\tNet Gain");
-				string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5:0.00}\t{6:0.00}\t{7:0.00}";
+				sw.WriteLine("Service\tLot ID\tMetal\tItemType\tBought Date\tSold Date\tAdjusted Basis\tSale Price\tNet Gain");
+				string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6:0.00}\t{7:0.00}\t{8:0.00}";
 
 				foreach (TaxableSale sale in sales.Where(s => s.SaleDate.Year == year).OrderBy(s => s.PurchaseDate).ToList())
 				{
-					string formatted = string.Format(formatString, sale.Service,sale.LotID, sale.MetalType.ToString().ToLower(),
+					string formatted = string.Format(formatString, sale.Service,sale.LotID, 
+						sale.MetalType.ToString().ToLower(), sale.ItemType, 
 						sale.PurchaseDate.ToShortDateString(), sale.SaleDate.ToShortDateString(), 
 						sale.AdjustedBasis.Value, sale.SalePrice.Value, sale.SalePrice.Value - sale.AdjustedBasis.Value);
 					sw.WriteLine(formatted);

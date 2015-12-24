@@ -43,24 +43,25 @@ namespace MetalAccounting
 				{
 					case TransactionTypeEnum.Purchase:
 					case TransactionTypeEnum.PurchaseViaExchange:
-						Console.WriteLine(string.Format("{0} {1} received {2:0.000} {3}s {4} to account {5}", 
+						Console.WriteLine(string.Format("{0} {1} received {2:0.000} {3}s {4} ({5}) to account {6}", 
 							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountReceived, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(),
-							transaction.Account));
+							transaction.ItemType, transaction.Account));
 						PurchaseNewLot(transaction);
 						break;
 					case TransactionTypeEnum.Sale:
 					case TransactionTypeEnum.SaleViaExchange:
-						Console.WriteLine(string.Format("{0} {1} sold {2:0.000} {3}s {4} from account {5}", 
+						Console.WriteLine(string.Format("{0} {1} sold {2:0.000} {3}s {4} ({5}) from account {6}", 
 							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountPaid, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(), 
-							transaction.Account));
+							transaction.ItemType, transaction.Account));
 						ProcessSale(transaction);
 						break;
 					case TransactionTypeEnum.Transfer:
-						Console.WriteLine(string.Format("{0} {1} transferred {2:0.000} {3}s {4} from account {5}, vault {6} to account {7}, vault {8}",
+						Console.WriteLine(string.Format("{0} {1} transferred {2:0.000} {3}s {4} ({5}) from account {6}, vault {7} to account {8}, vault {9}",
 							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountReceived, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(), 
+							transaction.ItemType, 
 							transaction.TransferFromAccount, transaction.TransferFromVault, transaction.Account, transaction.Vault));
 						ProcessTransfer(transaction);
 							break;
@@ -77,8 +78,8 @@ namespace MetalAccounting
 		public void DumpTransactions(string filename, List<Transaction> transactions)
 		{
 			StreamWriter sw = new StreamWriter(filename);
-			sw.WriteLine("Date\tService\tType\tMetal\tWeight\tUnit\tAccount\tAmountPaid\tAmountReceived\tCurrency\tVault\tTransactionId\tMemo");
-			string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}";
+			sw.WriteLine("Date\tService\tType\tMetal\tWeight\tUnit\t\tItemTypeAccount\tAmountPaid\tAmountReceived\tCurrency\tVault\tTransactionId\tMemo");
+			string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}";
 
 			foreach (var transaction in transactions.OrderBy(s => s.DateAndTime).ToList())
 			{
@@ -86,7 +87,7 @@ namespace MetalAccounting
 				string formatted = string.Format(formatString, transaction.DateAndTime, transaction.Service, 
 					transaction.TransactionType.ToString(), 
 					transaction.MetalType.ToString().ToLower(),
-					transaction.Weight, transaction.WeightUnit,
+					transaction.Weight, transaction.WeightUnit, transaction.ItemType,
 					transaction.Account, transaction.AmountPaid, transaction.AmountReceived, 
 					transaction.CurrencyUnit, transaction.Vault, transaction.TransactionID, transaction.Memo);
 				sw.WriteLine(formatted);
@@ -147,6 +148,7 @@ namespace MetalAccounting
 			return transactionList.Where(
 				s => s.TransactionID == transaction.TransactionID
 				&& s.Service == transaction.Service
+				&& s.ItemType == transaction.ItemType
 				&& s.AmountPaid > 0.0m
 				&& !s.Memo.Contains("Fee")).FirstOrDefault();
 		}
@@ -156,6 +158,7 @@ namespace MetalAccounting
 			return transactionList.Where(
 				s => s.TransactionID == transaction.TransactionID
 				&& s.Service == transaction.Service
+				&& s.ItemType == transaction.ItemType
 				&& s.AmountReceived > 0.0m
 				&& !s.Memo.Contains("Fee")).FirstOrDefault();
 		}
@@ -167,6 +170,7 @@ namespace MetalAccounting
 			List<Lot> availableLots = lots.Where(
 				s => s.Service == transaction.Service
 				&& s.MetalType == transaction.MetalType 
+				&& s.ItemType == transaction.ItemType
 				&& s.Vault == transaction.TransferFromVault 
 				&& s.Account == transaction.TransferFromAccount
 				&& s.CurrentWeight(transaction.WeightUnit) > 0)
@@ -200,10 +204,11 @@ namespace MetalAccounting
 		{
 			decimal originalWeightToSellInGrams = Utils.ConvertWeight(transaction.AmountPaid, transaction.WeightUnit,
 				MetalWeightEnum.Gram);
-			MetalAmount remainingAmountToSell = new MetalAmount(transaction.AmountPaid, transaction.MetalType, transaction.WeightUnit);
+			MetalAmount remainingAmountToSell = new MetalAmount(transaction.AmountPaid, transaction.MetalType, transaction.WeightUnit, transaction.ItemType);
 			List<Lot> availableLots = lots.Where(
 				s => s.Service == transaction.Service
 				&& s.MetalType == transaction.MetalType
+				&& s.ItemType == transaction.ItemType
 				&& s.Account == transaction.Account
 				&& s.Vault == transaction.Vault
 				&& s.CurrentWeight(transaction.WeightUnit) > 0.0m)
@@ -231,7 +236,7 @@ namespace MetalAccounting
 			Lot newLot = new Lot(transaction.Service, transaction.TransactionID, transaction.DateAndTime, transaction.AmountReceived, 
 				transaction.WeightUnit, 
 				new ValueInCurrency(transaction.AmountPaid, transaction.CurrencyUnit, transaction.DateAndTime),
-				transaction.MetalType, transaction.Vault, transaction.Account);
+				transaction.MetalType, transaction.Vault, transaction.Account, transaction.ItemType);
 			lots.Add(newLot);
 		}
 
@@ -247,6 +252,7 @@ namespace MetalAccounting
 				s => s.Service == transaction.Service
 				&& s.MetalType == fee.MetalType 
 				&& s.Account == transaction.Account
+				&& s.ItemType == transaction.ItemType
 				&& s.CurrentWeight(fee.WeightUnit) > 0)
 				.OrderBy(s => s.PurchaseDate).ToList();
 			if (transaction.Vault.ToLower() != "any")
@@ -279,6 +285,7 @@ namespace MetalAccounting
 				                          s => s.Service == transaction.Service
 				                          && s.MetalType == transaction.MetalType
 				                          && s.Account == transaction.Account
+										  && s.ItemType == transaction.ItemType
 				                          && s.CurrentWeight(transaction.WeightUnit) > 0)
 				.OrderBy(s => s.PurchaseDate).ToList();
 			if (transaction.Vault.ToLower() != "any")

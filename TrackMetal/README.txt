@@ -33,9 +33,11 @@ The .txt formats for BullionVault and GoldMoney are specific to those services (
 and are produced by downloading reports from those services (see instructions below). Other types use 
 a generic .txt file format as follows:
 
-Date, Vault, Order ID, Type, Amount, Currency, Weight, WeightUnit, Metal, Status, Invoice, Invoice Date
+Date, Vault, Order ID, Type, Amount, Currency, Weight, WeightUnit, Metal, Status, Invoice, Invoice Date, Item Type
 
-The data should be tab-separated, with a header line. See the sample data files for more info.
+The data should be tab-separated, with a header line. Item type is optional; if set, it will restrict the 
+matching to only match items of that same type (this is used for semi-numismatics). See the sample data 
+files for more info.
 
 After running, TrackMetal will output the following result files:
 
@@ -106,7 +108,7 @@ reflected in the transactions. To account for this, create a tab-delimited file 
 BullionVault-<accountname>-gold-additional.txt (ex. BullionVault-Main-gold-additional.txt) and 
 place it in the TrackMetal working directory.
 
-The file format expected for the tab-delimited BullionVault data is same as TrackMetal's generic
-file format for spreadsheet data:
+The file format expected for the tab-delimited BullionVault data is:
 
-Date, Vault, Order ID, Type, Amount, Currency, Weight, WeightUnit, Metal, Status, Invoice, Invoice Date
+OrderDateTime, OrderID, Action, Vault, Value, ClientTransRef, Currency, Metal, GoodTil, LastModified, 
+PricePerKg, OrderType, Status, Quantity, QtyFilled, Commission, Consideration, TradeType

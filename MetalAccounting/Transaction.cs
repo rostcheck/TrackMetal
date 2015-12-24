@@ -18,10 +18,12 @@ namespace MetalAccounting
 		public MetalTypeEnum MetalType { get; set; }
 		public string TransferFromVault { get; set; }
 		public string TransferFromAccount { get; set; }
+		public string ItemType { get; set; }
 
 		public Transaction(string service, string account, DateTime dateAndTime, string transactionID, 
 			TransactionTypeEnum transactionType, string vault, decimal amountPaid, CurrencyUnitEnum currencyUnit, 
-			decimal amountReceived, MetalWeightEnum weightUnit, MetalTypeEnum metalType, string memo)
+			decimal amountReceived, MetalWeightEnum weightUnit, MetalTypeEnum metalType, string memo, 
+			string itemType = "Generic")
 		{
 			this.Service = service;
 			this.Account = account;
@@ -35,6 +37,7 @@ namespace MetalAccounting
 			this.WeightUnit = weightUnit;
 			this.MetalType = metalType;
 			this.Memo = memo;
+			this.ItemType = itemType;
 		}
 
 		public decimal Weight

@@ -13,9 +13,8 @@ namespace MetalAccounting
 		public List<Transaction> Parse(string fileName)
 		{
 			const int headerLines = 1;
-			VerifyFilename(fileName);
 			string serviceName = ParseServiceNameFromFilename(fileName);
-			string accountName = ParseAccountNameFromFilename(fileName);
+			string accountName = ParseAccountNameFromFilename(fileName, serviceName);
 
 			List<Transaction> transactionList = new List<Transaction>();
 			StreamReader reader = new StreamReader(fileName);
@@ -44,6 +43,11 @@ namespace MetalAccounting
 				CurrencyUnitEnum currencyUnit = GetCurrencyUnit(fields[5]);			
 				decimal weight = Convert.ToDecimal(fields[6]);
 				MetalWeightEnum weightUnit = GetWeightUnit(fields[7]);
+				string itemType = "Generic";
+				if (fields.Length >= 13)
+				{
+					itemType = fields[12];
+				}
 
 				decimal amountPaid = 0.0m, amountReceived = 0.0m;
 				if (transactionType == TransactionTypeEnum.Purchase)
@@ -65,7 +69,7 @@ namespace MetalAccounting
 
 				Transaction newTransaction = new Transaction(serviceName, accountName, dateAndTime, 
 					transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived, 
-					weightUnit, metalType, "");
+					weightUnit, metalType, "", itemType);
 				transactionList.Add(newTransaction);
 				line = reader.ReadLine();
 			}
@@ -89,6 +93,7 @@ namespace MetalAccounting
 			switch (weightUnit.ToUpper())
 			{
 				case "OZ":
+				case "TROYOZ":
 					return MetalWeightEnum.TroyOz;
 				case "G":
 					return MetalWeightEnum.Gram;

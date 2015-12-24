@@ -71,6 +71,7 @@ namespace MetalAccounting
 					&& s.DateAndTime >= transaction.DateAndTime
 					&& s.MetalType == transaction.MetalType
 					&& s.TransactionType == oppositeTransactionType
+					&& s.ItemType == transaction.ItemType
 					&& s.AmountReceived >= (.9m * transaction.AmountPaid))
 						.OrderBy(s => s.DateAndTime).FirstOrDefault();
 
@@ -82,6 +83,7 @@ namespace MetalAccounting
 						&& s.DateAndTime <= transaction.DateAndTime
 						&& s.MetalType == transaction.MetalType
 						&& s.TransactionType == oppositeTransactionType
+						&& s.ItemType == transaction.ItemType
 						&& s.AmountReceived >= (.9m * transaction.AmountPaid))
 						.OrderBy(s => s.DateAndTime).FirstOrDefault();
 

@@ -13,6 +13,7 @@ namespace MetalAccounting
 		public decimal SaleWeight { get; set; }
 		public ValueInCurrency SalePrice { get; set; }
 		public string Service { get; set; }
+		public string ItemType { get; set; }
 
 		public TaxableSale(Lot fromLot, MetalAmount amount, ValueInCurrency salePrice)
 		{
@@ -28,6 +29,7 @@ namespace MetalAccounting
 			this.SaleWeight = Utils.ConvertWeight(amount.Weight, amount.WeightUnit, this.WeightUnit);
 			this.SalePrice = new ValueInCurrency(salePrice);
 			this.SaleDate = salePrice.Date;
+			this.ItemType = amount.ItemType;
 		}
 	}
 }

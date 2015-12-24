@@ -15,9 +15,11 @@ namespace MetalAccounting
 			this.serviceName = serviceName;
 		}
 
-		protected string ParseAccountNameFromFilename(string fileName)
+		protected string ParseAccountNameFromFilename(string fileName, string thisServiceName = null)
 		{
-			Regex r = new Regex(string.Format(@"^{0}-(?<account>\w+)-", serviceName));
+			if (thisServiceName == null)
+				thisServiceName = serviceName;
+			Regex r = new Regex(string.Format(@"^{0}-(?<account>\w+)-", thisServiceName));
 			Match m = r.Match(fileName);
 			if (m.Success)
 				return m.Groups["account"].Value;
