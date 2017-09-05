@@ -43,18 +43,18 @@ namespace MetalAccounting
 				{
 					case TransactionTypeEnum.Purchase:
 					case TransactionTypeEnum.PurchaseViaExchange:
-						Console.WriteLine(string.Format("{0} {1} received {2:0.000} {3}s {4} ({5}) to account {6}", 
+					Console.WriteLine(string.Format("{0} {1} received {2:0.000} {3}s {4} ({5}) to account {6} vault {7}", 
 							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountReceived, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(),
-							transaction.ItemType, transaction.Account));
+							transaction.ItemType, transaction.Account, transaction.Vault));
 						PurchaseNewLot(transaction);
 						break;
 					case TransactionTypeEnum.Sale:
 					case TransactionTypeEnum.SaleViaExchange:
-						Console.WriteLine(string.Format("{0} {1} sold {2:0.000} {3}s {4} ({5}) from account {6}", 
+					Console.WriteLine(string.Format("{0} {1} sold {2:0.000} {3}s {4} ({5}) from account {6} vault {7}", 
 							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountPaid, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(), 
-							transaction.ItemType, transaction.Account));
+							transaction.ItemType, transaction.Account, transaction.Vault));
 						ProcessSale(transaction);
 						break;
 					case TransactionTypeEnum.Transfer:
@@ -213,6 +213,16 @@ namespace MetalAccounting
 				&& s.Vault == transaction.Vault
 				&& s.CurrentWeight(transaction.WeightUnit) > 0.0m)
 				.OrderBy(s => s.PurchaseDate).ToList();
+
+			List<Lot> availableLots2 = lots.Where (
+				s => s.Service == transaction.Service
+				&& s.MetalType == transaction.MetalType
+				&& s.ItemType == transaction.ItemType
+				&& s.Account == transaction.Account
+				//&& s.Vault == transaction.Vault
+				&& s.CurrentWeight (transaction.WeightUnit) > 0.0m)
+				.OrderBy (s => s.PurchaseDate).ToList ();
+			
 			foreach(Lot lot in availableLots)
 			{
 				if (remainingAmountToSell.Weight == 0.0m)
