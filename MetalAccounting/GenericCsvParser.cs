@@ -28,6 +28,10 @@ namespace MetalAccounting
 					continue;
 				}
 				string[] fields = line.Split('\t');
+				if (fields.Length < 2)
+				{
+					fields = line.Split(','); // Could be CSV
+				}
 				if (string.Join("", fields) == string.Empty || line.Contains("Number of transactions ="))
 				{
 					line = reader.ReadLine();
