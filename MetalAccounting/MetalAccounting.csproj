@@ -59,6 +59,7 @@
     <Compile Include="MatchAcrossTransactionsAlgorithm.cs" />
     <Compile Include="MatchSimilarTransactions.cs" />
     <Compile Include="GenericCsvParser.cs" />
+    <Compile Include="ILogWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

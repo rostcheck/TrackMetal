@@ -58,7 +58,7 @@ namespace MetalAccounting
 					amountReceived = ParseAmountReceived(memo, currencyUnit);
 				Transaction newTransaction = new Transaction("GoldMoney", accountName, dateAndTime, 
 					transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived, 
-					weightUnit, metalType, memo, "Generic");
+					weightUnit, metalType, memo, metalType.ToString());
 				transactionList.Add(newTransaction);
 			 	line = reader.ReadLine();
 			}

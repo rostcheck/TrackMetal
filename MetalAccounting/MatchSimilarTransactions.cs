@@ -12,10 +12,9 @@ namespace MetalAccounting
 
 		// Like transfers, like kind exchanges become one transfer transaction (the receiving side) and a 
 		// storage fee (on the sending side account) that accounts for any effect on basis.
-		public List<Transaction> FormLikeKindExchanges(List<Transaction> transactionList)
+		public List<Transaction> FormLikeKindExchanges(List<Transaction> transactionList, ILogWriter writer)
 		{
-			Console.WriteLine();
-			Console.WriteLine("Identifying like kind exchanges using similar transactions algorithm:");
+			writer.WriteEntry("\nIdentifying like kind exchanges using similar transactions algorithm:");
 			List<Transaction> transactionsToRemove = new List<Transaction>();
 			string formatString = "Matched {0} {1} from {2} on {3} of {4} {5} (transaction ID {6}) with {7} to {8} on {9} of {10} {11} (transaction ID {12})";				
 			List<Transaction> sourceTransactions = new List<Transaction>();
@@ -28,12 +27,13 @@ namespace MetalAccounting
 				if (receiveTransaction == null)
 					continue; // no match
 
-				Console.WriteLine(formatString, sourceTransaction.MetalType, sourceTransaction.TransactionType, 
+				string message = string.Format(formatString, sourceTransaction.MetalType, sourceTransaction.TransactionType, 
 					sourceTransaction.Service, sourceTransaction.DateAndTime.ToShortDateString(),
 					sourceTransaction.Weight, sourceTransaction.WeightUnit, sourceTransaction.TransactionID,
 					receiveTransaction.TransactionType, receiveTransaction.Service, 
 					receiveTransaction.DateAndTime.ToShortDateString(), receiveTransaction.Weight, 
-					receiveTransaction.WeightUnit, receiveTransaction.TransactionID);	
+					receiveTransaction.WeightUnit, receiveTransaction.TransactionID);
+				writer.WriteEntry(message);
 				if (receiveTransaction.AmountReceived != sourceTransaction.AmountPaid)
 				{
 					decimal amountDifference = sourceTransaction.AmountPaid - Utils.ConvertWeight(receiveTransaction.AmountReceived,
@@ -53,7 +53,7 @@ namespace MetalAccounting
 			}
 			foreach (Transaction sourceTransaction in transactionsToRemove)
 				transactionList.Remove(sourceTransaction);
-			Console.WriteLine("Finished identifying like kind exchanges.");
+			writer.WriteEntry("Finished identifying like kind exchanges.");
 			return transactionList;
 		}
 

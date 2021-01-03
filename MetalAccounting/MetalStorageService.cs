@@ -9,6 +9,7 @@ namespace MetalAccounting
 	{
 		private List<Lot> lots;
 		private List<TaxableSale> sales;
+		private ILogWriter logWriter;
 
 		public List<Lot> Lots
 		{
@@ -26,24 +27,25 @@ namespace MetalAccounting
 			}
 		}
 
-		public MetalStorageService()
+		public MetalStorageService(ILogWriter writer)
 		{
 			lots = new List<Lot>();
 			sales = new List<TaxableSale>();
+			logWriter = writer;
 		}
 
 		public void ApplyTransactions(List<Transaction> transactionList)
 		{
 			transactionList = FormTransfers(transactionList);
 			transactionList = MatchAlgorithmFactory.Create(MatchAlgorithmEnum.MatchAcrossTransactions)
-				.FormLikeKindExchanges(transactionList);
+				.FormLikeKindExchanges(transactionList, logWriter);
 			foreach (Transaction transaction in transactionList.OrderBy(s => s.DateAndTime))
 			{
 				switch (transaction.TransactionType)
 				{
 					case TransactionTypeEnum.Purchase:
 					case TransactionTypeEnum.PurchaseViaExchange:
-					Console.WriteLine(string.Format("{0} {1} received {2:0.000000} {3}s {4} ({5}) to account {6} vault {7}", 
+						logWriter.WriteEntry(string.Format("{0} {1} received {2:0.000000} {3}s {4} ({5}) to account {6} vault {7}", 
 							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountReceived, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(),
 							transaction.ItemType, transaction.Account, transaction.Vault));
@@ -51,14 +53,14 @@ namespace MetalAccounting
 						break;
 					case TransactionTypeEnum.Sale:
 					case TransactionTypeEnum.SaleViaExchange:
-					Console.WriteLine(string.Format("{0} {1} sold {2:0.000000} {3}s {4} ({5}) from account {6} vault {7}", 
+						logWriter.WriteEntry(string.Format("{0} {1} sold {2:0.000000} {3}s {4} ({5}) from account {6} vault {7}", 
 							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountPaid, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(), 
 							transaction.ItemType, transaction.Account, transaction.Vault));
 						ProcessSale(transaction);
 						break;
 					case TransactionTypeEnum.TransferIn:
-						Console.WriteLine(string.Format("{0} {1} transferred {2:0.000000} {3}s {4} ({5}) from account {6}, vault {7} to account {8}, vault {9}",
+						logWriter.WriteEntry(string.Format("{0} {1} transferred {2:0.000000} {3}s {4} ({5}) from account {6}, vault {7} to account {8}, vault {9}",
 							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountReceived, 
 							transaction.WeightUnit.ToString().ToLower(), transaction.MetalType.ToString().ToLower(), 
 							transaction.ItemType, 

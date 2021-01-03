@@ -5,7 +5,7 @@ namespace MetalAccounting
 {
 	public interface ITransactionListProcessor
 	{
-		List<Transaction> FormLikeKindExchanges(List<Transaction> transactionList);
+		List<Transaction> FormLikeKindExchanges(List<Transaction> transactionList, ILogWriter writer);
 	}
 }
 

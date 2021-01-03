@@ -17,7 +17,7 @@ namespace MetalAccounting
 			string accountName = ParseAccountNameFromFilename(fileName);
 
 			List<Transaction> transactionList = new List<Transaction>();
-			MetalWeightEnum weightUnit = MetalWeightEnum.Gram; // BullionVault does all calculations in grams except silver (kg)
+			MetalWeightEnum weightUnit = MetalWeightEnum.Gram; // BullionVault does all calculations kg
 			StreamReader reader = new StreamReader(fileName);
 			string line = reader.ReadLine();
 			int lineCount = 0;
@@ -47,8 +47,7 @@ namespace MetalAccounting
 				decimal amountPaid = 0.0m, amountReceived = 0.0m;
 
 				MetalTypeEnum metalType = GetMetalType (fields [7]);
-				if (metalType == MetalTypeEnum.Silver)
-					weight *= 1000; // Bullionvault counts silver in kg
+				weight *= 1000; // Bullionvault counts metal in kg, convert to grams
 				
 				if (transactionType == TransactionTypeEnum.Purchase)
 				{
@@ -68,7 +67,7 @@ namespace MetalAccounting
 
 				Transaction newTransaction = new Transaction("BullionVault", accountName, dateAndTime, 
 					transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived, 
-					weightUnit, metalType, "", "Generic");
+					weightUnit, metalType, "", metalType.ToString());
 				transactionList.Add(newTransaction);
 				line = reader.ReadLine();
 			}
