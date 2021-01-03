@@ -43,7 +43,7 @@ namespace MetalAccounting
 						sourceTransaction.DateAndTime, sourceTransaction.TransactionID, TransactionTypeEnum.StorageFeeInMetal,
 						sourceTransaction.Vault, amountDifference, sourceTransaction.CurrencyUnit, 0.0m, 
 						sourceTransaction.WeightUnit, sourceTransaction.MetalType, 
-						"Transfer fee in metal from like-kind exchange " + sourceTransaction.TransactionID);
+						"Transfer fee in metal from like-kind exchange " + sourceTransaction.TransactionID, "Generic");
 					transactionList.Add(storageFee);
 				}
 

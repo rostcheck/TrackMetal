@@ -15,6 +15,7 @@ namespace TrackMetal
 				Console.WriteLine("Usage: TrackMetal <filename> [filenames...]");
 				return;
 			}
+			Console.WriteLine("\nStarting run at {0} {1}", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
 
 			MetalStorageService storageService = new MetalStorageService();
 			GoldMoneyParser goldMoneyParser = new GoldMoneyParser();
@@ -36,11 +37,11 @@ namespace TrackMetal
 			storageService.ApplyTransactions(transactionList);
 			PrintResults(storageService);
 			storageService.DumpTransactions("tm-transactions.txt", transactionList);
-			string command = "";
-			do {
-				ProcessCommand(command, storageService);
-				command = GetString("command: ");
-			} while (command != "quit");
+			//string command = "";
+			//do {
+			//	ProcessCommand(command, storageService);
+			//	command = GetString("command: ");
+			//} while (command != "quit");
 		}
 
 		private static void ProcessCommand(string command, MetalStorageService storageService)
@@ -95,7 +96,7 @@ namespace TrackMetal
 			Console.WriteLine();
 			Console.WriteLine("Remaining lots:");
 			string formatString = "Lot ID {0} @ {1} in {2}: bought {3}, remaining {4} {5} {6} {7}";
-			foreach (Lot lot in storageService.Lots.Where(s => s.CurrentWeight(MetalWeightEnum.Gram) > 0.0m)
+			foreach (Lot lot in storageService.Lots.Where(s => !s.IsDepleted())
 				.OrderBy(s => s.PurchaseDate).ToList())
 			{
 				string formatted = string.Format(formatString, lot.LotID, lot.Service, lot.Vault, lot.PurchaseDate.ToShortDateString(),

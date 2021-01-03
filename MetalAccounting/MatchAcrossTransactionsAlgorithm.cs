@@ -89,6 +89,8 @@ namespace MetalAccounting
 					s => s.DateAndTime > transaction.DateAndTime - new TimeSpan(30, 0, 0, 0)
 					&& s.DateAndTime < transaction.DateAndTime + new TimeSpan(30, 0, 0, 0)
 					&& s.MetalType == transaction.MetalType
+					&& s.ItemType == transaction.ItemType
+					&& s.Vault != transaction.Vault
 					&& s.TransactionType == oppositeTransactionType)
 						.OrderBy(s => s.DateAndTime).ToList();
 		}

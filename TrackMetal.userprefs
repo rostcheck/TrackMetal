@@ -1,44 +1,10 @@
-﻿<Properties GitUserInfo="UsingGIT" StartupItem="TrackMetal/TrackMetal.csproj">
+﻿<Properties StartupConfiguration="{7EDBFFA7-750B-4201-841E-4ED72A0197A9}|Default">
+  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="TrackMetal/README.txt">
-    <Files>
-      <File FileName="MetalAccounting/MatchSimilarTransactions.cs" Line="1" Column="1" />
-      <File FileName="MetalAccounting/TransactionTypeEnum.cs" Line="1" Column="1" />
-      <File FileName="TrackMetal/README.txt" Line="110" Column="33" />
-      <File FileName="MetalAccounting/BullionVaultParser.cs" Line="1" Column="1" />
-      <File FileName="MetalAccounting/MetalTypeEnum.cs" Line="1" Column="1" />
-      <File FileName="MetalAccounting/MetalStorageService.cs" Line="1" Column="1" />
-      <File FileName="MetalAccounting/ParserBase.cs" Line="1" Column="1" />
-      <File FileName="MetalAccounting/MatchAcrossTransactionsAlgorithm.cs" Line="1" Column="1" />
-      <File FileName="MetalAccounting/Lot.cs" Line="1" Column="1" />
-      <File FileName="MetalAccounting/GoldMoneyParser.cs" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Users/davidr/Documents/Software Projects/Xamarin/TrackMetal/MetalAccounting/GoldMoneyParser.cs" line="270" column="1" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches>
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="101" offsetX="1011" offsetY="1500" expression="amountDifference" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="82" offsetX="650" offsetY="1215" expression="transactionList" liveUpdate="False" />
-    <Watch file="MetalAccounting/GoldMoneyParser.cs" line="51" offsetX="599" offsetY="750" expression="memo" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="270" offsetX="1098" offsetY="4035" expression="transaction.AmountPaid" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="270" offsetX="1098" offsetY="4035" expression="transaction.AmountPaid" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="270" offsetX="1098" offsetY="4035" expression="transaction.AmountPaid" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="270" offsetX="1098" offsetY="4035" expression="transaction.AmountPaid" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="270" offsetX="1098" offsetY="4035" expression="transaction.AmountPaid" liveUpdate="False" />
-    <Watch file="MetalAccounting/MetalStorageService.cs" line="270" offsetX="1098" offsetY="4035" expression="transaction.AmountPaid" liveUpdate="False" />
-    <Watch file="MetalAccounting/MatchAcrossTransactionsAlgorithm.cs" line="82" offsetX="965" offsetY="1215" expression="transaction.DateAndTime" liveUpdate="False" />
-    <Watch file="MetalAccounting/MatchAcrossTransactionsAlgorithm.cs" line="82" offsetX="965" offsetY="1215" expression="transaction.Memo" liveUpdate="False" />
-    <Watch file="MetalAccounting/MatchAcrossTransactionsAlgorithm.cs" line="82" offsetX="965" offsetY="1215" expression="transaction.MetalType" liveUpdate="False" />
-    <Watch file="MetalAccounting/MatchAcrossTransactionsAlgorithm.cs" line="89" offsetX="528" offsetY="1282" expression="transaction.MetalType" liveUpdate="False" />
-    <Watch file="MetalAccounting/MatchAcrossTransactionsAlgorithm.cs" line="84" offsetX="412" offsetY="1250" expression="transaction.DateAndTime" liveUpdate="False" />
-  </MonoDevelop.Ide.DebuggingService.PinnedWatches>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.TrackMetal PreferredExecutionTarget="MonoDevelop.Default" />
 </Properties>

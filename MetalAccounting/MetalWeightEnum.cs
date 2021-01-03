@@ -5,7 +5,8 @@ namespace MetalAccounting
 	public enum MetalWeightEnum
 	{
 		Gram,
-		TroyOz
+		TroyOz,
+		CryptoCoin
 	}
 }
 

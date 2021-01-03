@@ -7,7 +7,8 @@ namespace MetalAccounting
 		Gold,
 		Silver,
 		Platinum,
-		Palladium
+		Palladium,
+		Crypto
 	}
 }
 

@@ -68,7 +68,7 @@ namespace MetalAccounting
 
 				Transaction newTransaction = new Transaction("BullionVault", accountName, dateAndTime, 
 					transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived, 
-					weightUnit, metalType, "");
+					weightUnit, metalType, "", "Generic");
 				transactionList.Add(newTransaction);
 				line = reader.ReadLine();
 			}

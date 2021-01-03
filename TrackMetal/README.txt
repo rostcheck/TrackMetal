@@ -1,5 +1,6 @@
-﻿TrackMetal is a tax accounting program for calculating capital gains on bullion investments. 
-It can handle many aspects of bullion investing that normal accounting programs, such as 
+﻿TrackMetal is a tax accounting program for calculating capital gains on physiccal and virtual assets
+such as bullion and cryptocurrency investments. 
+It can handle many aspects of physical investing that normal accounting programs, such as 
 Quicken and Microsoft Money, fail badly at:
 
 - Preserving lot identity during transfers between vaults, which may appear as a separate buy 
@@ -9,6 +10,7 @@ Quicken and Microsoft Money, fail badly at:
   in one service and immediately buying it via another.
 - Treating the buy-sell spread on a "like-kind" transaction as a basis adjustment (cost to move
   between services or vaults)
+- Transferring cryptocurrency between services (while retaining the original lot open date)
 - Accounting for metal storage costs taken either by charging currency or by removing metal
   from the holding
 - Understanding that the metal retains its identity when addressed in different accounting 
@@ -20,7 +22,7 @@ TrackMetal understands the QIF export formats used by several common bullion sto
 (GoldMoney, BullionVault) and, through the use of auxiliary utilities, can convert them to 
 tab-delimited .txt formats and then consume them. It automatically corrects for database and 
 output format changes made by these services through time and fixes known issues in their 
-extracts.
+extracts. It can also accept input in spreadsheet format (see below)
 
 When run, it reads all .txt files in its working directory (except for any beginning with "tm-",
 which are its own). File names should, by convention, be named <servicename>-<account>-<subtype>.txt 
@@ -31,13 +33,15 @@ transaction set, on which it operates, so the division does not matter to it.
 
 The .txt formats for BullionVault and GoldMoney are specific to those services (see the sample files)
 and are produced by downloading reports from those services (see instructions below). Other types use 
-a generic .txt file format as follows:
+a generic .txt or .csv file format as follows:
 
 Date, Vault, Order ID, Type, Amount, Currency, Weight, WeightUnit, Metal, Status, Invoice, Invoice Date, Item Type
 
-The data should be tab-separated, with a header line. Item type is optional; if set, it will restrict the 
-matching to only match items of that same type (this is used for semi-numismatics). See the sample data 
-files for more info.
+The data should be tab-separated or comma-separated, with a header line. If using CSV, strings with commas
+should be escaped with quotes("). Item type is optional; if set, it will restrict the 
+matching to only match items of that same type. This is used for semi-numismatics, ex. item type of "1-oz Gold Maple Leaf",
+or for cryptocurrencies, ex. item type of "BTC", and could be used in a similar way for other assets such as
+trading cards. See the sample data files for more info.
 
 After running, TrackMetal will output the following result files:
 

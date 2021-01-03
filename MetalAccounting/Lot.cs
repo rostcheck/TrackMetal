@@ -69,7 +69,7 @@ namespace MetalAccounting
 		private ValueInCurrency adjustedPrice;
 
 		public Lot(string service, string transactionID, DateTime purchaseDate, decimal originalWeight, MetalWeightEnum weightUnit, 
-			ValueInCurrency price, MetalTypeEnum metalType, string vault, string account, string itemType = "Generic")
+			ValueInCurrency price, MetalTypeEnum metalType, string vault, string account, string itemType)
 		{
 			history = new List<string>();
 			this.service = service;
@@ -95,25 +95,44 @@ namespace MetalAccounting
 			return Utils.ConvertWeight(currentWeight, this.WeightUnit, toWeightUnit);
 		}
 
+		public bool IsDepleted()
+        {
+			return currentWeight == 0.0m; // Current weight is 0 (in native units)
+        }
+
 		public void ApplyFeeInCurrency(ValueInCurrency fee)
 		{
 			this.AdjustedPrice.Value += Utils.ConvertCurrency(fee.Value, fee.Currency, this.AdjustedPrice.Currency);
 			history.Add(fee.Date.ToShortDateString() + " Applied fee " + fee.Value + " " + fee.Currency);
 		}
 
-		public void DecreaseWeight(decimal weightAmount, MetalWeightEnum fromWeightUnit)
+		public void DecreaseWeightViaFee(DateTime transactionDateTime, decimal weightAmount, MetalWeightEnum fromWeightUnit)
+        {
+			this.DecreaseWeight(weightAmount, fromWeightUnit);
+			history.Add(string.Format("{0} decreased weight by {1:0.0000000} {2} as fee", transactionDateTime.Date.ToShortDateString(),
+				weightAmount, WeightUnit));
+		}
+
+		public void DecreaseWeightViaTransfer(DateTime transactionDateTime, decimal weightAmount, MetalWeightEnum fromWeightUnit,
+			string account, string vault)
+		{
+			this.DecreaseWeight(weightAmount, fromWeightUnit);
+			history.Add(string.Format("{0} transferred {1:0.0000000} {2} to account {3}, vault {4}", transactionDateTime.Date.ToShortDateString(),
+				weightAmount, WeightUnit, account, vault));
+		}
+
+		private void DecreaseWeight(decimal weightAmount, MetalWeightEnum fromWeightUnit)
 		{
 			decimal newCurrentWeight = currentWeight - Utils.ConvertWeight(weightAmount, fromWeightUnit, this.WeightUnit);
 			if (newCurrentWeight < 0.0m)
 				throw new Exception("Cannot decrease lot weight by more than its current weight");
 			currentWeight = newCurrentWeight;
-			history.Add("Decreased weight by " + weightAmount + " " + WeightUnit);
 		}
 
-		public void IncreaseWeight(decimal weightAmount, MetalWeightEnum fromWeightUnit)
+		private void IncreaseWeight(decimal weightAmount, MetalWeightEnum fromWeightUnit)
 		{
 			currentWeight += Utils.ConvertWeight(weightAmount, fromWeightUnit, this.WeightUnit);
-			history.Add("Increased weight by " + weightAmount + " " + WeightUnit);
+			history.Add(string.Format("Increased weight by {0:0.0000000} {1}", weightAmount, WeightUnit));
 		}			
 
 		public TaxableSale Sell(MetalAmount amount, ValueInCurrency salePrice)

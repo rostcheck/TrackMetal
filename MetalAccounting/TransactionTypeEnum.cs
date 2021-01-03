@@ -10,7 +10,9 @@ namespace MetalAccounting
 		PurchaseViaExchange, // Heterogenous metal-to-metal exchange (ex. gold-to-silver) forces a sale and purchase
 		Sale,
 		SaleViaExchange,
-		Transfer,
+		Transfer, // Transfer, send or receive not specified, must be determined by inspection logic
+		TransferOut,
+		TransferIn,
 		Indeterminate // Cannot determine with info provided - will determine in later phase. Use in parsers only.
 	}
 }

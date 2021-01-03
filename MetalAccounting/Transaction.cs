@@ -23,7 +23,7 @@ namespace MetalAccounting
 		public Transaction(string service, string account, DateTime dateAndTime, string transactionID, 
 			TransactionTypeEnum transactionType, string vault, decimal amountPaid, CurrencyUnitEnum currencyUnit, 
 			decimal amountReceived, MetalWeightEnum weightUnit, MetalTypeEnum metalType, string memo, 
-			string itemType = "Generic")
+			string itemType)
 		{
 			this.Service = service;
 			this.Account = account;
@@ -83,7 +83,7 @@ namespace MetalAccounting
 		public Transaction Duplicate()
 		{
 			return new Transaction(Service, Account, DateAndTime, TransactionID, TransactionType,
-				Vault, AmountPaid, CurrencyUnit, AmountReceived, WeightUnit, MetalType, Memo);
+				Vault, AmountPaid, CurrencyUnit, AmountReceived, WeightUnit, MetalType, Memo, ItemType);
 		}
 
 		public void MakeTransfer(string account, string vault)
