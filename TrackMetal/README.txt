@@ -1,4 +1,7 @@
-﻿TrackMetal is a tax accounting program for calculating capital gains on physiccal and virtual assets
+﻿What is this?
+-------------
+
+TrackMetal is a tax accounting program for calculating capital gains on physical and virtual assets
 such as bullion and cryptocurrency investments. 
 It can handle many aspects of physical investing that normal accounting programs, such as 
 Quicken and Microsoft Money, fail badly at:
@@ -18,13 +21,21 @@ Quicken and Microsoft Money, fail badly at:
 
 It produces a result file of capital gains transactions and also outputs a view of the current lots.
 
+
+How do I use it?
+----------------
+
+TrackMetal runs as a batch program, reading the accounting files in the directory in which it is run
+and producing output files. To use it, download the source from https://bitbucket.org/davidrostcheck/trackmetal
+and open it in Visual Studio, where you can compile and run it.
+
 TrackMetal understands the QIF export formats used by several common bullion storage companies
 (GoldMoney, BullionVault) and, through the use of auxiliary utilities, can convert them to 
 tab-delimited .txt formats and then consume them. It automatically corrects for database and 
 output format changes made by these services through time and fixes known issues in their 
 extracts. It can also accept input in spreadsheet format (see below)
 
-When run, it reads all .txt files in its working directory (except for any beginning with "tm-",
+When run, it reads all .txt and .csv files in its working directory (except for any beginning with "tm-",
 which are its own). File names should, by convention, be named <servicename>-<account>-<subtype>.txt 
 (ex. Goldmoney-Joint-silver.txt). The subtype allows you to divide the transactions in whatever way 
 is convenient - by metal or by transaction type, for example. This is helpful for adding in other costs,
@@ -39,9 +50,9 @@ Date, Vault, Order ID, Type, Amount, Currency, Weight, WeightUnit, Metal, Status
 
 The data should be tab-separated or comma-separated, with a header line. If using CSV, strings with commas
 should be escaped with quotes("). Item type is optional; if set, it will restrict the 
-matching to only match items of that same type. This is used for semi-numismatics, ex. item type of "1-oz Gold Maple Leaf",
-or for cryptocurrencies, ex. item type of "BTC", and could be used in a similar way for other assets such as
-trading cards. See the sample data files for more info.
+matching to only match items of that same type. This is used for semi-numismatics, ex. item type of "1-oz Gold
+Maple Leaf", or for cryptocurrencies, ex. item type of "BTC", and could be used in a similar way for other assets
+such as trading cards. See the sample data files for more info.
 
 After running, TrackMetal will output the following result files:
 

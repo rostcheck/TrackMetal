@@ -84,7 +84,7 @@ namespace MetalAccounting
 			this.vault = vault;
 			this.account = account;
 			this.ItemType = itemType;
-			history.Add(string.Format("Opened lot {0} bought {1} {2} {3} ({4}) for {5} {6}, vault{7}, account {8}", 
+			history.Add(string.Format("{0} Opened lot: bought {1} {2} {3} ({4}) for {5} {6}, vault {7}, account {8}", 
 				purchaseDate.ToShortDateString(), originalWeight, weightUnit, metalType, itemType, price.Value, 
 				price.Currency, vault, account));
 		}
@@ -109,7 +109,7 @@ namespace MetalAccounting
 		public void DecreaseWeightViaFee(DateTime transactionDateTime, decimal weightAmount, MetalWeightEnum fromWeightUnit)
         {
 			this.DecreaseWeight(weightAmount, fromWeightUnit);
-			history.Add(string.Format("{0} decreased weight by {1:0.0000000} {2} as fee", transactionDateTime.Date.ToShortDateString(),
+			history.Add(string.Format("{0} Decreased by {1:0.0000000} {2} as fee", transactionDateTime.Date.ToShortDateString(),
 				weightAmount, WeightUnit));
 		}
 
@@ -117,7 +117,7 @@ namespace MetalAccounting
 			string account, string vault)
 		{
 			this.DecreaseWeight(weightAmount, fromWeightUnit);
-			history.Add(string.Format("{0} transferred {1:0.0000000} {2} to account {3}, vault {4}", transactionDateTime.Date.ToShortDateString(),
+			history.Add(string.Format("{0} Transferred {1:0.0000000} {2} to account {3}, vault {4}", transactionDateTime.Date.ToShortDateString(),
 				weightAmount, WeightUnit, account, vault));
 		}
 
@@ -132,7 +132,7 @@ namespace MetalAccounting
 		private void IncreaseWeight(decimal weightAmount, MetalWeightEnum fromWeightUnit)
 		{
 			currentWeight += Utils.ConvertWeight(weightAmount, fromWeightUnit, this.WeightUnit);
-			history.Add(string.Format("Increased weight by {0:0.0000000} {1}", weightAmount, WeightUnit));
+			history.Add(string.Format("Increased by {0:0.0000000} {1}", weightAmount, WeightUnit));
 		}			
 
 		public TaxableSale Sell(MetalAmount amount, ValueInCurrency salePrice)
@@ -153,7 +153,7 @@ namespace MetalAccounting
 			TaxableSale taxableSale = new TaxableSale(this, amount, salePrice);
 			currentWeight = newCurrentWeight;
 			AdjustedPrice.Value = AdjustedPrice.Value * (1.0m - percentOfLotToSell);
-			history.Add(string.Format("{0} sold {1} {2} {3} for {4} {5:0.00}", 
+			history.Add(string.Format("{0} Sold {1} {2} {3} for {4} {5:0.00}", 
 				salePrice.Date.ToShortDateString(), amount.Weight, amount.WeightUnit, amount.MetalType,
 				salePrice.Currency, salePrice.Value));
 			return taxableSale;

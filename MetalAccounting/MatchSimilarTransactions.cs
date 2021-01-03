@@ -53,6 +53,7 @@ namespace MetalAccounting
 			}
 			foreach (Transaction sourceTransaction in transactionsToRemove)
 				transactionList.Remove(sourceTransaction);
+			Console.WriteLine("Finished identifying like kind exchanges.");
 			return transactionList;
 		}
 

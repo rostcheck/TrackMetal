@@ -48,13 +48,13 @@ namespace MetalAccounting
 				TransactionTypeEnum apparentTransactionType = GetApparentTransactionType(amountPaid, amountReceived);
 				TransactionTypeEnum transactionType = GetTransactionType(transactionTypeString, memo, apparentTransactionType);
 				memo = FixMemo(transactionTypeString, memo, transactionID);
-				if (transactionType == TransactionTypeEnum.Transfer)
+				if (transactionType == TransactionTypeEnum.TransferIn || transactionType == TransactionTypeEnum.TransferOut)
 					transactionID = ParseTransferTransactionID(memo);
 				string vault = fields[3];
 				currencyUnit = ParseCurrencyUnit(memo);
-				if (amountPaid == 0.0m && transactionType != TransactionTypeEnum.Transfer)
+				if (amountPaid == 0.0m && transactionType != TransactionTypeEnum.TransferOut)
 					amountPaid = ParseAmountPaid(memo, currencyUnit);
-				if (amountReceived == 0.0m && transactionType != TransactionTypeEnum.Transfer)
+				if (amountReceived == 0.0m && transactionType != TransactionTypeEnum.TransferIn)
 					amountReceived = ParseAmountReceived(memo, currencyUnit);
 				Transaction newTransaction = new Transaction("GoldMoney", accountName, dateAndTime, 
 					transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived, 
@@ -213,7 +213,7 @@ namespace MetalAccounting
 						// If the transaction is a exchange of a metal for the same metal, this is really a transfer
 						if (IsFromAndToSameMetal(memo))
 						{
-							return TransactionTypeEnum.Transfer;
+							return (apparentTransactionType == TransactionTypeEnum.Sale) ? TransactionTypeEnum.TransferOut : TransactionTypeEnum.TransferIn;
 						}
 						switch (apparentTransactionType)
 						{
@@ -226,7 +226,8 @@ namespace MetalAccounting
 						}
 					}
 				default:
-					return GetOtherType(transactionType, memo);
+					return (apparentTransactionType == TransactionTypeEnum.Sale) ? TransactionTypeEnum.TransferOut : TransactionTypeEnum.TransferIn;
+
 			}
 		}
 
@@ -250,7 +251,7 @@ namespace MetalAccounting
 		private static TransactionTypeEnum GetOtherType(string transactionType, string memo)
 		{
 			if (transactionType.ToLower().Contains("payment"))
-				return TransactionTypeEnum.Transfer;
+				return TransactionTypeEnum.TransferOut;
 			else
 				throw new Exception("Unknown transaction type " + transactionType);
 		}
@@ -263,7 +264,7 @@ namespace MetalAccounting
 			{
 				if (m.Groups["metal1"].Value == m.Groups["metal2"].Value)
 				{
-					return TransactionTypeEnum.Transfer;
+					throw new Exception("can't identify transaction from: " + memo);
 				}
 				else
 				{

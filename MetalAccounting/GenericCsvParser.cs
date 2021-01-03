@@ -84,7 +84,8 @@ namespace MetalAccounting
 			decimal weight = Convert.ToDecimal(fields[6]);
 			MetalWeightEnum weightUnit = GetWeightUnit(fields[7]);
 			string itemType = "Generic";
-			itemType = fields[12];
+			if (fields.Count > 12)
+				itemType = fields[12];
 
 			decimal amountPaid = 0.0m, amountReceived = 0.0m;
 			if (transactionType == TransactionTypeEnum.Purchase)
@@ -103,7 +104,7 @@ namespace MetalAccounting
 				amountPaid = weight;
 			else if (transactionType == TransactionTypeEnum.StorageFeeInCurrency)
 				amountPaid = Math.Abs(currencyAmount);
-			else if (transactionType != TransactionTypeEnum.Transfer)
+			else 
 				throw new Exception("Unknown transaction type " + transactionType);
 
 			MetalTypeEnum metalType = GetMetalType(fields[8]);
@@ -175,8 +176,6 @@ namespace MetalAccounting
 					return TransactionTypeEnum.TransferOut;
 				case "receive":
 					return TransactionTypeEnum.TransferIn;
-				case "transfer":
-					return TransactionTypeEnum.Transfer;
 				default:
 					throw new Exception("Transaction type " + transactionType + " not recognized");
 			}

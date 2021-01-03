@@ -16,7 +16,7 @@ namespace MetalAccounting
 		public List<Transaction> FormLikeKindExchanges(List<Transaction> transactionList)
 		{
 			Console.WriteLine();
-			Console.WriteLine("Identifying like kind exchanges:");
+			Console.WriteLine("Identifying like kind exchanges using match-across-transactions algorithm:");
 			List<Transaction> transactionsToRemove = new List<Transaction>();
 			string formatString = "Matched {0} {1} from {2} on {3} of {4} {5} (transaction ID {6}) with {7} to {8} on {9} of {10} {11} (transaction ID {12})";				
 			foreach (Transaction sourceTransaction in transactionList
@@ -75,6 +75,7 @@ namespace MetalAccounting
 			}
 			foreach (Transaction sourceTransaction in transactionsToRemove)
 				transactionList.Remove(sourceTransaction);
+			Console.WriteLine("Finished identifying like kind exchanges.");
 			return transactionList;
 		}
 

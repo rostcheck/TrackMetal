@@ -89,8 +89,8 @@ namespace TrackMetal
 		public static void PrintResults(MetalStorageService storageService)
 		{
 			Console.WriteLine();
-			Console.WriteLine("Output list of all transactions to tm-transactions.txt");
-			Console.WriteLine("Output capital gains to tm-gains.txt files (by year)");
+			Console.WriteLine("Wrote list of all transactions to tm-transactions.txt.");
+			Console.WriteLine("Wrote capital gains to tm-gains.txt files (by year).");
 			ExportCapitalGains(storageService.Sales);
 
 			Console.WriteLine();

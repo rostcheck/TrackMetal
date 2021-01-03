@@ -57,7 +57,6 @@ namespace MetalAccounting
 							transaction.ItemType, transaction.Account, transaction.Vault));
 						ProcessSale(transaction);
 						break;
-					case TransactionTypeEnum.Transfer:
 					case TransactionTypeEnum.TransferIn:
 						Console.WriteLine(string.Format("{0} {1} transferred {2:0.000000} {3}s {4} ({5}) from account {6}, vault {7} to account {8}, vault {9}",
 							transaction.DateAndTime.ToShortDateString(), transaction.Service, transaction.AmountReceived, 
@@ -100,11 +99,8 @@ namespace MetalAccounting
         private List<Transaction> FormTransfers(List<Transaction> transactionList)
         {
             List<Transaction> sourceTransactions = new List<Transaction>();
-            // Handle transfers in some bullion accounts that only report "transfer"
             var transferTransactionList = transactionList.Where(
-                s => s.TransactionType == TransactionTypeEnum.Transfer).ToList();
-            transferTransactionList.AddRange(transactionList.Where(
-                s => s.TransactionType == TransactionTypeEnum.TransferIn));
+                s => s.TransactionType == TransactionTypeEnum.TransferIn);
             foreach (Transaction transaction in transferTransactionList.OrderBy(s => s.DateAndTime))
             {
                 if (sourceTransactions.FirstOrDefault(s => s.TransactionID == transaction.TransactionID) != null)
@@ -162,6 +158,7 @@ namespace MetalAccounting
 					&& s.Service == transaction.Service
 					&& s.ItemType == transaction.ItemType).FirstOrDefault();
 				if (sourceTransaction == null)
+                {
 					// Inferred source
 					sourceTransaction = transactionList.Where(
 						s => s.TransactionID == transaction.TransactionID
@@ -169,6 +166,11 @@ namespace MetalAccounting
 						&& s.ItemType == transaction.ItemType
 						&& s.AmountPaid > 0.0m
 						&& !s.Memo.Contains("Fee")).FirstOrDefault();
+					// Fix generic "Transfer" to indicate direction
+					if (sourceTransaction.TransactionType != TransactionTypeEnum.TransferOut)
+						sourceTransaction.TransactionType = TransactionTypeEnum.TransferOut;
+				}
+
 			}
 			return sourceTransaction;
 		}
@@ -187,6 +189,7 @@ namespace MetalAccounting
 					&& s.Service == transaction.Service
 					&& s.ItemType == transaction.ItemType).FirstOrDefault();
 				if (receiveTransaction == null)
+				{
 					// Inferred destination
 					receiveTransaction = transactionList.Where(
 						s => s.TransactionID == transaction.TransactionID
@@ -194,6 +197,10 @@ namespace MetalAccounting
 						&& s.ItemType == transaction.ItemType
 						&& s.AmountPaid > 0.0m
 						&& !s.Memo.Contains("Fee")).FirstOrDefault();
+					// Fix generic "Transfer" to indicate direction
+					if (receiveTransaction.TransactionType != TransactionTypeEnum.TransferIn)
+						receiveTransaction.TransactionType = TransactionTypeEnum.TransferIn;
+				}
 			}
 			return receiveTransaction;
 		}

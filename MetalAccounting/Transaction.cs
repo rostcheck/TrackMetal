@@ -88,7 +88,7 @@ namespace MetalAccounting
 
 		public void MakeTransfer(string account, string vault)
 		{
-			this.TransactionType = TransactionTypeEnum.Transfer;
+			this.TransactionType = TransactionTypeEnum.TransferIn;
 			this.TransferFromAccount = account;
 			this.TransferFromVault = vault;
 		}
