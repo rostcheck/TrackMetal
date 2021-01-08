@@ -131,7 +131,8 @@ namespace TrackMetal
 				sw.WriteLine("Service\tLot ID\tMetal\tItemType\tBought Date\tSold Date\tAdjusted Basis\tSale Price\tNet Gain");
 				string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6:0.00}\t{7:0.00}\t{8:0.00}";
 
-				foreach (TaxableSale sale in sales.Where(s => s.SaleDate.Year == year).OrderBy(s => s.PurchaseDate).ToList())
+				foreach (TaxableSale sale in sales.Where(s => s.SaleDate.Year == year)
+					.OrderBy(s => s.Service).ThenBy(s => s.ItemType).ThenBy(s => s.PurchaseDate).ToList())
 				{
 					string formatted = string.Format(formatString, sale.Service,sale.LotID, 
 						sale.MetalType.ToString().ToLower(), sale.ItemType, 

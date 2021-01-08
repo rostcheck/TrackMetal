@@ -40,6 +40,7 @@ namespace MetalAccounting
 				string transactionTypeString = fields[2];
 				TransactionTypeEnum transactionType = GetTransactionType(transactionTypeString);
 				string vault = fields[3];
+				decimal value = Convert.ToDecimal(fields[4]);
 				decimal weight = Convert.ToDecimal(fields[14]);
 				decimal commission = Convert.ToDecimal(fields[15]);
 				decimal consideration = Convert.ToDecimal(fields[16]);
@@ -60,7 +61,7 @@ namespace MetalAccounting
 					amountReceived = totalCompensation;
 				}
 				else if (transactionType == TransactionTypeEnum.StorageFeeInCurrency)
-					amountPaid = Math.Abs(totalCompensation);
+					amountPaid = Math.Abs(value);
 				else
 					throw new Exception("Unknown transaction type " + transactionType);	
 				CurrencyUnitEnum currencyUnit = GetCurrencyUnit(fields[6]);
