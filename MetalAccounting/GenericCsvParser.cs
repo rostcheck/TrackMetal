@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using Csv;
 
 namespace MetalAccounting
 {
@@ -11,68 +9,7 @@ namespace MetalAccounting
 		{
 		}
 
-		public List<Transaction> Parse(string fileName)
-		{
-			if (fileName.ToLower().EndsWith(".txt"))
-				return ParseTxt(fileName);
-			else if (fileName.ToLower().EndsWith(".csv"))
-				return ParseCsv(fileName);
-			else
-				throw new FileLoadException("Unrecognized filename extension");
-		}
-
-		private List<Transaction> ParseTxt(string fileName)
-		{ 
-			const int headerLines = 1;
-			string serviceName = ParseServiceNameFromFilename(fileName);
-			string accountName = ParseAccountNameFromFilename(fileName, serviceName);
-
-			List<Transaction> transactionList = new List<Transaction>();
-			StreamReader reader = new StreamReader(fileName);
-			string line = reader.ReadLine();
-			int lineCount = 0;
-			while (line != null && line != string.Empty)
-			{
-				if (lineCount++ < headerLines)
-				{
-					line = reader.ReadLine();
-					continue;
-				}
-				string[] fields = line.Split('\t');
-				if (fields.Length < 2)
-				{
-					fields = line.Split(','); // Could be CSV
-				}
-				if (string.Join("", fields) == string.Empty || line.Contains("Number of transactions ="))
-				{
-					line = reader.ReadLine();
-					continue;
-				}
-
-				transactionList.Add(ParseFields(fields, serviceName, accountName));
-				line = reader.ReadLine();
-			}
-
-			return transactionList;
-		}
-
-		private List<Transaction> ParseCsv(string fileName)
-        {
-			string serviceName = ParseServiceNameFromFilename(fileName);
-			string accountName = ParseAccountNameFromFilename(fileName, serviceName);
-			List<Transaction> transactionList = new List<Transaction>();
-			var csv = File.ReadAllText(fileName);
-			foreach (var readFields in CsvReader.ReadFromText(csv))
-			{
-				List<string> fields = new List<string>(readFields.ColumnCount);
-				for (int i = 0; i < readFields.ColumnCount; i++)
-					fields.Add(readFields[i]);
-				transactionList.Add(ParseFields(fields, serviceName, accountName));
-			}
-			return transactionList;
-		}
-
-		private Transaction ParseFields(IList<string> fields, string serviceName, string accountName)
+		public override Transaction ParseFields(IList<string> fields, string serviceName, string accountName)
         {
 			DateTime dateAndTime = DateTime.Parse(fields[0]);
 			string vault = fields[1];
@@ -112,7 +49,6 @@ namespace MetalAccounting
 			return new Transaction(serviceName, accountName, dateAndTime,
 				transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived,
 				weightUnit, metalType, "", itemType);
-
 		}
 
 		private static CurrencyUnitEnum GetCurrencyUnit(string currencyUnit)

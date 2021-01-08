@@ -10,70 +10,42 @@ namespace MetalAccounting
 		{
 		}
 
-		public List<Transaction> Parse(string fileName)
+		public override Transaction ParseFields(IList<string> fields, string serviceName, string accountName)
 		{
-			const int headerLines = 1;
-			VerifyFilename(fileName);
-			string accountName = ParseAccountNameFromFilename(fileName);
+			DateTime dateAndTime = DateTime.Parse(fields[0]);
+			string transactionID = fields[1];
+			string transactionTypeString = fields[2];
+			TransactionTypeEnum transactionType = GetTransactionType(transactionTypeString);
+			string vault = fields[3];
+			decimal value = Convert.ToDecimal(fields[4]);
+			decimal weight = Convert.ToDecimal(fields[14]);
+			decimal commission = Convert.ToDecimal(fields[15]);
+			decimal consideration = Convert.ToDecimal(fields[16]);
+			decimal totalCompensation = commission + consideration;
+			decimal amountPaid = 0.0m, amountReceived = 0.0m;
 
-			List<Transaction> transactionList = new List<Transaction>();
-			MetalWeightEnum weightUnit = MetalWeightEnum.Gram; // BullionVault does all calculations kg
-			StreamReader reader = new StreamReader(fileName);
-			string line = reader.ReadLine();
-			int lineCount = 0;
-			while (line != null && line != string.Empty)
-			{
-				if (lineCount++ < headerLines)
-				{
-					line = reader.ReadLine();
-					continue;
-				}
-				string[] fields = line.Split('\t');
-				if (string.Join("", fields) == string.Empty || line.Contains("Number of transactions ="))
-				{
-					line = reader.ReadLine();
-					continue;
-				}
-
-				DateTime dateAndTime = DateTime.Parse(fields[0]);
-				string transactionID = fields[1];
-				string transactionTypeString = fields[2];
-				TransactionTypeEnum transactionType = GetTransactionType(transactionTypeString);
-				string vault = fields[3];
-				decimal value = Convert.ToDecimal(fields[4]);
-				decimal weight = Convert.ToDecimal(fields[14]);
-				decimal commission = Convert.ToDecimal(fields[15]);
-				decimal consideration = Convert.ToDecimal(fields[16]);
-				decimal totalCompensation = commission + consideration;
-				decimal amountPaid = 0.0m, amountReceived = 0.0m;
-
-				MetalTypeEnum metalType = GetMetalType (fields [7]);
-				weight *= 1000; // Bullionvault counts metal in kg, convert to grams
+			MetalTypeEnum metalType = GetMetalType (fields [7]);
+			weight *= 1000; // Bullionvault counts metal in kg, convert to grams
 				
-				if (transactionType == TransactionTypeEnum.Purchase)
-				{
-					amountPaid = totalCompensation;
-					amountReceived = weight;
-				}
-				else if (transactionType == TransactionTypeEnum.Sale)
-				{
-					amountPaid = weight;
-					amountReceived = totalCompensation;
-				}
-				else if (transactionType == TransactionTypeEnum.StorageFeeInCurrency)
-					amountPaid = Math.Abs(value);
-				else
-					throw new Exception("Unknown transaction type " + transactionType);	
-				CurrencyUnitEnum currencyUnit = GetCurrencyUnit(fields[6]);
-
-				Transaction newTransaction = new Transaction("BullionVault", accountName, dateAndTime, 
-					transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived, 
-					weightUnit, metalType, "", metalType.ToString());
-				transactionList.Add(newTransaction);
-				line = reader.ReadLine();
+			if (transactionType == TransactionTypeEnum.Purchase)
+			{
+				amountPaid = totalCompensation;
+				amountReceived = weight;
 			}
+			else if (transactionType == TransactionTypeEnum.Sale)
+			{
+				amountPaid = weight;
+				amountReceived = totalCompensation;
+			}
+			else if (transactionType == TransactionTypeEnum.StorageFeeInCurrency)
+				amountPaid = Math.Abs(value);
+			else
+				throw new Exception("Unknown transaction type " + transactionType);	
+			CurrencyUnitEnum currencyUnit = GetCurrencyUnit(fields[6]);
 
-			return transactionList;
+			return new Transaction("BullionVault", accountName, dateAndTime, 
+				transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived, 
+				MetalWeightEnum.Gram, metalType, "", metalType.ToString());
 		}
 
 		private static CurrencyUnitEnum GetCurrencyUnit(string currencyUnit)

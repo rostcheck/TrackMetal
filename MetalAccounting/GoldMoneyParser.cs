@@ -8,61 +8,44 @@ namespace MetalAccounting
 	public class GoldMoneyParser : ParserBase, IFileParser
 	{
 		const int headerLines = 1;
+		private MetalTypeEnum metalType;
+		private MetalWeightEnum weightUnit;
+
 		public GoldMoneyParser () : base("GoldMoney")
 		{
+
 		}
 
-		public List<Transaction> Parse(string fileName)
+		public override List<Transaction> Parse(string fileName)
+        {
+			this.metalType = ParseMetalTypeFromFilename(fileName);
+			this.weightUnit = GetWeightUnit(this.metalType);
+			return base.Parse(fileName);
+        }
+
+		public override Transaction ParseFields(IList<string> fields, string serviceName, string accountName)
 		{
-			VerifyFilename(fileName);
-			string accountName = ParseAccountNameFromFilename(fileName);
-
-			List<Transaction> transactionList = new List<Transaction>();
-			MetalTypeEnum metalType = ParseMetalTypeFromFilename(fileName);
-			MetalWeightEnum weightUnit = GetWeightUnit(metalType);
-
-			StreamReader reader = new StreamReader(fileName);
-			string line = reader.ReadLine();
-			int lineCount = 0;
-			while (line != null && line != string.Empty) 
-			{
-				if (lineCount++ < headerLines)
-				{
-				 	line = reader.ReadLine();
-					continue;
-				}
-				string[] fields = line.Split('\t');
-				if (string.Join("", fields) == string.Empty || line.Contains("Number of transactions ="))
-				{
-					line = reader.ReadLine();
-					continue;
-				}
-				CurrencyUnitEnum currencyUnit = CurrencyUnitEnum.USD;
-
-				DateTime dateAndTime = DateTime.Parse(fields[0]);
-				string transactionID = fields[1];
-				string transactionTypeString = fields[2];
-				string memo = fields[6];
-				decimal amountPaid = (fields[4] == string.Empty) ? 0.0m : Convert.ToDecimal(fields[4]);
-				decimal amountReceived = (fields[5] == string.Empty) ? 0.0m : Convert.ToDecimal(fields[5]);
-				TransactionTypeEnum apparentTransactionType = GetApparentTransactionType(amountPaid, amountReceived);
-				TransactionTypeEnum transactionType = GetTransactionType(transactionTypeString, memo, apparentTransactionType);
-				memo = FixMemo(transactionTypeString, memo, transactionID);
-				if (transactionType == TransactionTypeEnum.TransferIn || transactionType == TransactionTypeEnum.TransferOut)
-					transactionID = ParseTransferTransactionID(memo);
-				string vault = fields[3];
-				currencyUnit = ParseCurrencyUnit(memo);
-				if (amountPaid == 0.0m && transactionType != TransactionTypeEnum.TransferOut)
-					amountPaid = ParseAmountPaid(memo, currencyUnit);
-				if (amountReceived == 0.0m && transactionType != TransactionTypeEnum.TransferIn)
-					amountReceived = ParseAmountReceived(memo, currencyUnit);
-				Transaction newTransaction = new Transaction("GoldMoney", accountName, dateAndTime, 
-					transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived, 
-					weightUnit, metalType, memo, metalType.ToString());
-				transactionList.Add(newTransaction);
-			 	line = reader.ReadLine();
-			}
-			return transactionList;
+			CurrencyUnitEnum currencyUnit = CurrencyUnitEnum.USD;
+			DateTime dateAndTime = DateTime.Parse(fields[0]);
+			string transactionID = fields[1];
+			string transactionTypeString = fields[2];
+			string memo = fields[6];
+			decimal amountPaid = (fields[4] == string.Empty) ? 0.0m : Convert.ToDecimal(fields[4]);
+			decimal amountReceived = (fields[5] == string.Empty) ? 0.0m : Convert.ToDecimal(fields[5]);
+			TransactionTypeEnum apparentTransactionType = GetApparentTransactionType(amountPaid, amountReceived);
+			TransactionTypeEnum transactionType = GetTransactionType(transactionTypeString, memo, apparentTransactionType);
+			memo = FixMemo(transactionTypeString, memo, transactionID);
+			if (transactionType == TransactionTypeEnum.TransferIn || transactionType == TransactionTypeEnum.TransferOut)
+				transactionID = ParseTransferTransactionID(memo);
+			string vault = fields[3];
+			currencyUnit = ParseCurrencyUnit(memo);
+			if (amountPaid == 0.0m && transactionType != TransactionTypeEnum.TransferOut)
+				amountPaid = ParseAmountPaid(memo, currencyUnit);
+			if (amountReceived == 0.0m && transactionType != TransactionTypeEnum.TransferIn)
+				amountReceived = ParseAmountReceived(memo, currencyUnit);
+			return new Transaction("GoldMoney", accountName, dateAndTime, 
+				transactionID, transactionType, vault, amountPaid, currencyUnit, amountReceived, 
+				weightUnit, metalType, memo, metalType.ToString());
 		}
 
 		private static TransactionTypeEnum GetApparentTransactionType(decimal amountPaid, decimal amountReceived)
