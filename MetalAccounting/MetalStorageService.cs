@@ -37,8 +37,8 @@ namespace MetalAccounting
 		public void ApplyTransactions(List<Transaction> transactionList)
 		{
 			transactionList = FormTransfers(transactionList);
-			transactionList = MatchAlgorithmFactory.Create(MatchAlgorithmEnum.MatchAcrossTransactions)
-				.FormLikeKindExchanges(transactionList, logWriter);
+			//transactionList = MatchAlgorithmFactory.Create(MatchAlgorithmEnum.MatchAcrossTransactions)
+			//	.FormLikeKindExchanges(transactionList, logWriter);
 			foreach (Transaction transaction in transactionList.OrderBy(s => s.DateAndTime))
 			{
 				switch (transaction.TransactionType)
@@ -330,13 +330,16 @@ namespace MetalAccounting
 		{
 			if (transaction.TransactionType != TransactionTypeEnum.StorageFeeInCurrency)
 				throw new Exception("Wrong transaction type " + transaction.TransactionType + " passed to ApplyStorageFeeInCurrency");
-				
+
+			// Storage fee can apply to any lot closed within the month
+			DateTime limitDate = transaction.DateAndTime.AddDays(-1 * (transaction.DateAndTime.Day - 1));
+			
 			List<Lot> availableLots = lots.Where(
 				                          s => s.Service == transaction.Service
 				                          && s.MetalType == transaction.MetalType
 				                          && s.Account == transaction.Account
 										  && s.ItemType == transaction.ItemType
-				                          && s.IsDepleted() == false)
+				                          && s.CloseDate >= limitDate || s.CloseDate == null)
 				.OrderBy(s => s.PurchaseDate).ToList();
 			if (transaction.Vault.ToLower() != "any")
 				availableLots = availableLots.Where(s => s.Vault == transaction.Vault).ToList();
