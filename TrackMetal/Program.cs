@@ -27,12 +27,16 @@ namespace TrackMetal
 			{
 				if (filename.Contains("tm-"))
 					continue;
-				else if (filename.Contains("GoldMoney"))
-					transactionList.AddRange(goldMoneyParser.Parse(filename));
-				else if (filename.Contains("BullionVault"))
-					transactionList.AddRange(bullionVaultParser.Parse(filename));
 				else
-					transactionList.AddRange(genericCsvParser.Parse(filename));
+				{
+					Console.WriteLine("Read transactions from {0}", filename);
+					if (filename.Contains("GoldMoney"))
+						transactionList.AddRange(goldMoneyParser.Parse(filename));
+					else if (filename.Contains("BullionVault"))
+						transactionList.AddRange(bullionVaultParser.Parse(filename));
+					else
+						transactionList.AddRange(genericCsvParser.Parse(filename));
+				}
 			}
 			transactionList = transactionList.OrderBy(s => s.DateAndTime).ToList();
 			storageService.ApplyTransactions(transactionList);
@@ -184,7 +188,7 @@ namespace TrackMetal
 		{
 			StreamWriter sw = new StreamWriter(filename);
 			sw.WriteLine("Metal\tItemType\tCurrentWeight\tUnit\tCurrentBasis\tCurrency");
-			string formatString = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}";
+			string formatString = "{0}\t{1}\t{2}\t{3}\t{4:0.######}\t{5}";
 
 			var currentBasis = 0.0m;
 			var currentWeight = 0.0m;
